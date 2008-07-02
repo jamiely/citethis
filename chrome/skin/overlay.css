@@ -2,11 +2,11 @@
 
 #citethis-toolbar-button
 {
-  list-style-image: url("chrome://citethis/skin/toolbar-button.png");
+  list-style-image: url("chrome://citethis/chrome/skin/toolbar-button.png");
   }
 
 #citethis-statusbar-panel{
-      list-style-image: url("chrome://citethis/skin/icon.png");
+      list-style-image: url("chrome://citethis/chrome/skin/icon.png");
 }
 
 #txtCitationText { width: 100%; }
