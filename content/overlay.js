@@ -1,16 +1,17 @@
 function $ (el) { return document.getElementById ( el ); }
 
-var citation = {
+var citethis = {
   currentURL: '',
   onLoad: function() {
     // initialization code
+	
     this.initialized = true;
-    this.strings = document.getElementById("citation-strings");
+    this.strings = document.getElementById("citethis-strings");
     document.getElementById("contentAreaContextMenu")
             .addEventListener("popupshowing", function(e) { this.showContextMenu(e); }, false);
 	
-	citation.showCitationWindow ( false );
-	citation.setPageVariables (true);
+	citethis.showCitationWindow ( false );
+	citethis.setPageVariables (true);
 	window.setInterval ( this.checkPage, 1 );
 	var e = $('txtCitationText'),
 		select = function(e) { $('txtCitationText').select(); };
@@ -19,47 +20,47 @@ var citation = {
 	
 	var fields = 'txtAuthor txtYearPublished txtTitle txtURL txtLastAccessed'.split ( ' ' );
 	for ( var i = 0; i < fields.length; i ++ ) {
-		$(fields[i]).addEventListener('blur', citation.generateCitation, false);
+		$(fields[i]).addEventListener('blur', citethis.generateCitation, false);
 	}
 	
   },
   
   checkPage: function () {
-	if ( citation.getURL () != citation.currentURL ) {
-	  citation.currentURL = citation.getURL ();
-	  citation.setPageVariables ();
+	if ( citethis.getURL () != citethis.currentURL ) {
+	  citethis.currentURL = citethis.getURL ();
+	  citethis.setPageVariables ();
 	}
   },
   
   generateCitation: function () {
-	$('txtCitationText').value = citation.getCitation ();
+	$('txtCitationText').value = citethis.getCitation ();
   },
   
   setPageVariables: function ( setLastAccessed ) {
 	setLastAccessed = setLastAccessed === true;
-	$('txtAuthor').value = citation.getAuthor ();
-	$('txtYearPublished').value = citation.getYearPublished ();
-	$('txtTitle').value = citation.getTitle ();
-	$('txtURL').value = citation.getURL ();
+	$('txtAuthor').value = citethis.getAuthor ();
+	$('txtYearPublished').value = citethis.getYearPublished ();
+	$('txtTitle').value = citethis.getTitle ();
+	$('txtURL').value = citethis.getURL ();
 	if ( setLastAccessed ) 
-		$('txtLastAccessed').value = citation.getLastAccessed ();
+		$('txtLastAccessed').value = citethis.getLastAccessed ();
 		
-	citation.generateCitation ();
+	citethis.generateCitation ();
 	
   },
 
   showContextMenu: function(event) {
     // show or hide the menuitem based on what the context menu is on
     // see http://kb.mozillazine.org/Adding_items_to_menus
-    document.getElementById("context-citation").hidden = gContextMenu.onImage;
+    document.getElementById("context-citethis").hidden = gContextMenu.onImage;
   },
   onMenuItemCommand: function(e) {
     var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
                                   .getService(Components.interfaces.nsIPromptService);
     // promptService.alert(window, this.strings.getString("helloMessageTitle"),
                                 // this.strings.getString("helloMessage"));
-	//promptService.alert ( window, 'Citation', citation.getCitation () );
-	citation.openCitationDialog ();
+	//promptService.alert ( window, 'Citation', citethis.getCitation () );
+	citethis.openCitationDialog ();
   },
   
   alert: function (msg) {
@@ -123,39 +124,39 @@ var citation = {
   
   onToolbarButtonCommand: function(e) {
     // just reuse the function above.  you can change this, obviously!
-    citation.onMenuItemCommand(e);
+    citethis.onMenuItemCommand(e);
   },
   
   showCitationWindow: function ( val ) {
 	$('vboxCitation').parentNode.style.display = val ? '' : 'none';
   },
   
-  citationWindowIsVisible: function () {
+  citethisWindowIsVisible: function () {
 	return $('vboxCitation').parentNode.style.display == '';
   },
   
   toggleCitationWindow: function () {
-	citation.showCitationWindow ( ! citation.citationWindowIsVisible () );
+	citethis.showCitationWindow ( ! citethis.citethisWindowIsVisible () );
   },
   
   openCitationDialog : function () {
-	//citation.alert ( "hiding window" );
+	//citethis.alert ( "hiding window" );
 	//window.setAttribute("hidden", "true");
 	try {
 		//window.hidden = true;
 		//window.style.display = 'none';
 		//window.setAttribute ( 'style', 'height: 10px;' );
-		citation.toggleCitationWindow ();
+		citethis.toggleCitationWindow ();
 		
 	}
 	catch ( e ) {
-		citation.alert ( e.message );
+		citethis.alert ( e.message );
 	}
 	//window.removeAttribute("hidden");
-	//window.openDialog ( "chrome://citation/content/testDialog.xul", "_blank", "chrome,centerscreen", {author: citation.getAuthor() } );
+	//window.openDialog ( "chrome://citethis/content/testDialog.xul", "_blank", "chrome,centerscreen", {author: citethis.getAuthor() } );
   }
 
 };
-window.addEventListener("load", function(e) { citation.onLoad(e); }, false);
+window.addEventListener("load", function(e) { citethis.onLoad(e); }, false);
 
 

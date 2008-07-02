@@ -1,15 +1,12 @@
 /* This is just an example.  You shouldn't do this. */
-#citation-hello
+
+#citethis-toolbar-button
 {
-  
-}
-#citation-toolbar-button
-{
-  list-style-image: url("chrome://citation/skin/toolbar-button.png");
+  list-style-image: url("chrome://citethis/skin/toolbar-button.png");
   }
 
-#citation-statusbar-panel{
-      list-style-image: url("chrome://citation/skin/icon.png");
+#citethis-statusbar-panel{
+      list-style-image: url("chrome://citethis/skin/icon.png");
 }
 
 #txtCitationText { width: 100%; }

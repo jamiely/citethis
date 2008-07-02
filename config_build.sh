@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build config for build.sh
-APP_NAME=citation
+APP_NAME=citethis
 CHROME_PROVIDERS="content locale skin"
 CLEAN_UP=1
 ROOT_FILES=

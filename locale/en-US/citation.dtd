@@ -1,5 +1,0 @@
-<!ENTITY citation.label "Citation Generator">
-<!ENTITY citationContext.label "Use this to generate a citation for this site.">
-<!ENTITY citationContext.accesskey "Y">
-<!ENTITY citationToolbar.label "Cite">
-<!ENTITY citationToolbar.tooltip "Toggle Citation">

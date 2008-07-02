@@ -1,0 +1,5 @@
+<!ENTITY citethis.label "Citation Generator">
+<!ENTITY citethisContext.label "Use this to generate a citethis for this site.">
+<!ENTITY citethisContext.accesskey "Y">
+<!ENTITY citethisToolbar.label "Cite">
+<!ENTITY citethisToolbar.tooltip "Toggle Citation">
