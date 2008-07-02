@@ -8,7 +8,7 @@
     <em:creator>Jamie Ly</em:creator>
     <em:description>Use this extension to generate citatinions for the websites you visit.</em:description>
     <em:homepageURL>http://www.angelforge.org/CiteThis/</em:homepageURL>
-    <em:aboutURL>chrome://citethis/content/about.xul</em:aboutURL>
+    <em:aboutURL>chrome://citethis/chrome/content/about.xul</em:aboutURL>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->
