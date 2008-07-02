@@ -1,0 +1,15 @@
+/* This is just an example.  You shouldn't do this. */
+#citation-hello
+{
+  
+}
+#citation-toolbar-button
+{
+  list-style-image: url("chrome://citation/skin/toolbar-button.png");
+  }
+
+#citation-statusbar-panel{
+      list-style-image: url("chrome://citation/skin/icon.png");
+}
+
+#txtCitationText { width: 100%; }
