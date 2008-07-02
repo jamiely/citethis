@@ -4,7 +4,7 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>citethis@angelforge.org</em:id>
     <em:name>Cite This!</em:name>
-    <em:version>0.11</em:version>
+    <em:version>0.12</em:version>
     <em:creator>Jamie Ly</em:creator>
     <em:description>Use this extension to generate citatinions for the websites you visit.</em:description>
     <em:homepageURL>http://www.angelforge.org/CiteThis/</em:homepageURL>
