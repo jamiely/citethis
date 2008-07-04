@@ -1,0 +1,12 @@
+/* This is just an example.  You shouldn't do this. */
+
+#citethis-toolbar-button
+{
+  list-style-image: url("chrome://citethis/skin/toolbar-button.png");
+  }
+
+#citethis-statusbar-panel{
+      list-style-image: url("chrome://citethis/skin/icon.png");
+}
+
+#txtCitationText { width: 100%; }

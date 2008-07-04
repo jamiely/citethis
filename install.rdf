@@ -4,15 +4,15 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>citethis@angelforge.org</em:id>
     <em:name>Cite This!</em:name>
-    <em:version>0.12</em:version>
+    <em:version>0.13</em:version>
     <em:creator>Jamie Ly</em:creator>
-    <em:description>Use this extension to generate citatinions for the websites you visit.</em:description>
-    <em:homepageURL>http://www.angelforge.org/CiteThis/</em:homepageURL>
-    <em:aboutURL>chrome://citethis/chrome/content/about.xul</em:aboutURL>
+    <em:description>Cite this allows you to easily retrieve citations for the websites you visited.</em:description>
+    <em:homepageURL>http://www.angelforge.org/CiteThis</em:homepageURL>
+    <em:iconURL>chrome://citethis/content/citethis.png</em:iconURL>
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->
-        <em:minVersion>2.0</em:minVersion>
+        <em:minVersion>1.5</em:minVersion>
         <em:maxVersion>3.0.*</em:maxVersion>
       </Description>
     </em:targetApplication>
