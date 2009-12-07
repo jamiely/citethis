@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+ 
+<prefwindow id="citethis-prefs"
+     title="CiteThis! Options"
+     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 
+<prefpane id="citethis-pane" label="CiteThis! Settings">
+  <preferences>
+    <preference id="pref_citation_style" name="citethis.citationStyle" type="string"/>
+  </preferences>
+ 
+  <hbox align="center">
+    <label control="symbol" value="Citation style: "/>
+    <!--<textbox preference="pref_citation_style" id="citationStyle" maxlength="4"/>-->
+
+	<menulist preference="pref_citation_style" id="citationStyle" label="Citation Style">
+		<menupopup>
+			<menuitem label="APA" value="apa" />
+			<menuitem label="AMA" value="ama" />
+		</menupopup>
+	</menulist>
+
+	
+  </hbox>
+  <hbox flex="1">
+		<label value="'$author $year $title $url $lastAccessed are availabe variables.'" />
+	</hbox>
+	<hbox flex="1">
+		<label control="citationStyleCustom" value="Custom citation: " />
+		<textbox preference="pref_citation_style_custom" id="citationStyleCustom" label="Custom" />
+	</hbox>
+</prefpane>
+ 
+</prefwindow>

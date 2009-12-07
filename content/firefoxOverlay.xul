@@ -36,7 +36,7 @@
 	        <textbox id="txtAuthor" value=""/>
 	    
 	        <label control="txtYearPublished" accesskey="" value="Year of Publication"/>
-	        <textbox id="txtYearPublished" value=""/>
+	        <textbox id="txtYearPublished" value="" maxLength="4" />
 	    
 	        <label control="txtTitle" accesskey="" value="Title"/>
 	        <textbox id="txtTitle" value=""/>
@@ -48,8 +48,17 @@
 			<label control="txtLastAccessed" accesskey="" value="Last Accessed"/>
 	        <textbox id="txtLastAccessed" value=""/>
 			
+			<label control="txtLastUpdated" accesskey="" value="Last Updated"/>
+	        <textbox id="txtLastUpdated" value=""/>
 			
+			<label id="lblCitationStyle" value="" />
 		</hbox>
+		
+		<!--
+		<hbox flex="1">
+			<textbox flex="1" id="txtDebug" accesskey="" value="" multiline ="true"/>
+		</hbox>
+		-->
 	</vbox>
   </window>  
 </overlay>
