@@ -55,11 +55,11 @@
 			<label id="lblCitationStyle" value="" />
 		</hbox>
 
-		<!-- -->
+		<!--
 		<hbox flex="1">
 			<textbox flex="1" id="txtDebug" accesskey="" value="" multiline ="true"/>
 		</hbox>
-
+        -->
 	</vbox>
   </window>
 </overlay>

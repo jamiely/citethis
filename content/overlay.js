@@ -43,7 +43,7 @@ var citethis = {
   dateformat: "MMMM dd, yyyy",
   debug: function ( msg ){
 
-  	//return;
+  	return;
 
   	var n = new Date(),
 		timestamp = [
