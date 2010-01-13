@@ -405,7 +405,11 @@ var citethis = {
   getTitle: function () {
   	var siteSpec =  citethis.getSiteSpecific('getTitle');
     if ( siteSpec ) return siteSpec;
-	return document.title == "Mozilla Firefox" ? "Website Title" : document.title;
+	if ( document.title == "Mozilla Firefox" )
+	   return "Website Title";
+	// some people have reported the browser is attached to title.
+	// i see no such thing! putting this here just in case.
+	return document.title.replace(/ - Mozilla Firefox$/i, '');
   },
 
   onToolbarButtonCommand: function(e) {
