@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
  xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>citethis@angelforge.org</em:id>
     <em:name>Cite This!</em:name>
-    <em:version>0.15</em:version>
+    <em:version>0.16</em:version>
     <em:creator>Jamie Ly</em:creator>
     <em:description>Cite this allows you to easily retrieve citations for the websites you visit.</em:description>
     <em:homepageURL>http://www.angelforge.org/CiteThis</em:homepageURL>
     <em:iconURL>chrome://citethis/content/citethis.png</em:iconURL>
 	<em:optionsURL>chrome://citethis/content/options.xul</em:optionsURL>
-	
+
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- firefox -->
         <em:minVersion>3.0</em:minVersion>
-        <em:maxVersion>3.*</em:maxVersion>
+        <em:maxVersion>3.6.*</em:maxVersion>
       </Description>
     </em:targetApplication>
-	 
+
   </Description>
 </RDF>

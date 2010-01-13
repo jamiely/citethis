@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
- 
+
 <prefwindow id="citethis-prefs"
      title="CiteThis! Options"
      xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
- 
+
 <prefpane id="citethis-pane" label="CiteThis! Settings">
   <preferences>
     <preference id="pref_citation_style" name="citethis.citationStyle" type="string"/>
+	<preference id="pref_dateformat" name="citethis.dateformat" type="string"/>
+	<preference id="pref_citation_style_custom" name="citethis.citationStyleCustom" type="string"/>
   </preferences>
- 
+
   <hbox align="center">
     <label control="symbol" value="Citation style: "/>
     <!--<textbox preference="pref_citation_style" id="citationStyle" maxlength="4"/>-->
@@ -18,10 +20,20 @@
 		<menupopup>
 			<menuitem label="APA" value="apa" />
 			<menuitem label="AMA" value="ama" />
+			<menuitem label="MLA" value="mla" />
 		</menupopup>
 	</menulist>
 
-	
+
+
+  </hbox>
+
+  <hbox flex="1">
+        <label value="Uses DateJS format specified http://code.google.com/p/datejs/wiki/FormatSpecifiers" />
+  </hbox>
+  <hbox flex="1">
+     <label control="dateformat" value="Date Format String (International format:dd MMM yyyy). " />
+     <textbox preference="pref_dateformat" id="dateformat" label="Date Format" />
   </hbox>
   <hbox flex="1">
 		<label value="'$author $year $title $url $lastAccessed are availabe variables.'" />
@@ -31,5 +43,5 @@
 		<textbox preference="pref_citation_style_custom" id="citationStyleCustom" label="Custom" />
 	</hbox>
 </prefpane>
- 
+
 </prefwindow>
