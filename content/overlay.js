@@ -12,10 +12,10 @@ var citethis = {
 
 		// date should be spelled out!
 		if ( data.author ) {
-			return '$author. ('+year+') $title. Retrieved from $url';
+			return '$author. ('+year+') $title. Retrieved $lastAccessed, from $url';
 		}
 		else {
-			return '$title. ('+year+') Retrieved from $url';
+			return '$title. ('+year+') Retrieved $lastAccessed, from $url';
 		}
 	},
 	ama: function(data) {
@@ -57,6 +57,16 @@ var citethis = {
 
   	citethis.$('txtDebug').value = timestamp + ': ' + msg + '\n' + citethis.$('txtDebug').value;
   },
+
+  clearCitationList: function() {
+	citethis.$('citationList').value = '';
+  },
+
+  addCitationToList: function(newCitation) {
+	newCitation = newCitation || citethis.getCitationText ();
+	citethis.$('citationList').value += newCitation;
+  },
+
   onLoad: function() {
   	try {
 		// initialization code
@@ -96,6 +106,8 @@ var citethis = {
 		citethis.debug(5);
 		citethis.updateCitation();
 		citethis.debug(6);
+		
+		citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
 
 	}
 	catch (e) {
@@ -189,6 +201,10 @@ var citethis = {
    */
   generateCitation: function () {
 	citethis.$('txtCitationText').value = citethis.getCitation ();
+  },
+
+  getCitationText: function () {
+	return citethis.$('txtCitationText').value;
   },
 
   setPageVariables: function ( setLastAccessed ) {
@@ -390,16 +406,7 @@ var citethis = {
 		"October", "November", "December"];
 
 	var d = new Date();
-	var curr_date = d.getDate();
-	var curr_month = d.getMonth();
-	var curr_year = d.getFullYear();
-
-
-	//return m_names[curr_month] + ' ' + curr_date + ', ' + curr_year;
-
-
-	return Date.today().toString(citethis.dateformat);
-
+	return citethis.Date.format(d, citethis.dateformat);
   },
 
   getTitle: function () {
@@ -418,14 +425,14 @@ var citethis = {
   },
 
   showCitationWindow: function ( val ) {
-	citethis.$('vboxCitation').parentNode.style.display = val ? '' : 'none';
+	citethis.$('citethisRoot').parentNode.style.display = val ? '' : 'none';
 	if ( val ) {
 		citethis.updateCitation();
 	}
   },
 
   citethisWindowIsVisible: function () {
-	return citethis.$('vboxCitation').parentNode.style.display == '';
+	return citethis.$('citethisRoot').parentNode.style.display == '';
   },
 
   toggleCitationWindow: function () {
@@ -443,6 +450,199 @@ var citethis = {
   }
 
 };
+
+
+
+// the following functions taken from datejs library, with MIT license.
+citethis.Date = {}; 
+citethis.Date.CultureInfo = {
+    name: "en-US",
+    englishName: "English (United States)",
+    nativeName: "English (United States)",
+    dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    abbreviatedDayNames: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    shortestDayNames: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    firstLetterDayNames: ["S", "M", "T", "W", "T", "F", "S"],
+    monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    abbreviatedMonthNames: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    amDesignator: "AM",
+    pmDesignator: "PM",
+    firstDayOfWeek: 0,
+    twoDigitYearMax: 2029,
+    dateElementOrder: "mdy",
+    formatPatterns: {
+        shortDate: "M/d/yyyy",
+        longDate: "dddd, MMMM dd, yyyy",
+        shortTime: "h:mm tt",
+        longTime: "h:mm:ss tt",
+        fullDateTime: "dddd, MMMM dd, yyyy h:mm:ss tt",
+        sortableDateTime: "yyyy-MM-ddTHH:mm:ss",
+        universalSortableDateTime: "yyyy-MM-dd HH:mm:ssZ",
+        rfc1123: "ddd, dd MMM yyyy HH:mm:ss GMT",
+        monthDay: "MMMM dd",
+        yearMonth: "MMMM, yyyy"
+    },
+    regexPatterns: {
+        jan: /^jan(uary)?/i,
+        feb: /^feb(ruary)?/i,
+        mar: /^mar(ch)?/i,
+        apr: /^apr(il)?/i,
+        may: /^may/i,
+        jun: /^jun(e)?/i,
+        jul: /^jul(y)?/i,
+        aug: /^aug(ust)?/i,
+        sep: /^sep(t(ember)?)?/i,
+        oct: /^oct(ober)?/i,
+        nov: /^nov(ember)?/i,
+        dec: /^dec(ember)?/i,
+        sun: /^su(n(day)?)?/i,
+        mon: /^mo(n(day)?)?/i,
+        tue: /^tu(e(s(day)?)?)?/i,
+        wed: /^we(d(nesday)?)?/i,
+        thu: /^th(u(r(s(day)?)?)?)?/i,
+        fri: /^fr(i(day)?)?/i,
+        sat: /^sa(t(urday)?)?/i,
+        future: /^next/i,
+        past: /^last|past|prev(ious)?/i,
+        add: /^(\+|after|from)/i,
+        subtract: /^(\-|before|ago)/i,
+        yesterday: /^yesterday/i,
+        today: /^t(oday)?/i,
+        tomorrow: /^tomorrow/i,
+        now: /^n(ow)?/i,
+        millisecond: /^ms|milli(second)?s?/i,
+        second: /^sec(ond)?s?/i,
+        minute: /^min(ute)?s?/i,
+        hour: /^h(ou)?rs?/i,
+        week: /^w(ee)?k/i,
+        month: /^m(o(nth)?s?)?/i,
+        day: /^d(ays?)?/i,
+        year: /^y((ea)?rs?)?/i,
+        shortMeridian: /^(a|p)/i,
+        longMeridian: /^(a\.?m?\.?|p\.?m?\.?)/i,
+        timezone: /^((e(s|d)t|c(s|d)t|m(s|d)t|p(s|d)t)|((gmt)?\s*(\+|\-)\s*\d\d\d\d?)|gmt)/i,
+        ordinalSuffix: /^\s*(st|nd|rd|th)/i,
+        timeContext: /^\s*(\:|a|p)/i
+    },
+    abbreviatedTimeZoneStandard: {
+        GMT: "-000",
+        EST: "-0400",
+        CST: "-0500",
+        MST: "-0600",
+        PST: "-0700"
+    },
+    abbreviatedTimeZoneDST: {
+        GMT: "-000",
+        EDT: "-0500",
+        CDT: "-0600",
+        MDT: "-0700",
+        PDT: "-0800"
+    }
+};
+citethis.Date.getMonthNumberFromName = function (name) {
+    var n = citethis.Date.CultureInfo.monthNames,
+        m = citethis.Date.CultureInfo.abbreviatedMonthNames,
+        s = name.toLowerCase();
+    for (var i = 0; i < n.length; i++) {
+        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) {
+            return i;
+        }
+    }
+    return -1;
+};
+citethis.Date.getDayNumberFromName = function (name) {
+    var n = citethis.Date.CultureInfo.dayNames,
+        m = citethis.Date.CultureInfo.abbreviatedDayNames,
+        o = citethis.Date.CultureInfo.shortestDayNames,
+        s = name.toLowerCase();
+    for (var i = 0; i < n.length; i++) {
+        if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) {
+            return i;
+        }
+    }
+    return -1;
+};
+citethis.Date.isLeapYear = function (year) {
+    return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
+};
+citethis.Date.getDaysInMonth = function (year, month) {
+    return [31, (citethis.Date.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+};
+citethis.Date.getTimezoneOffset = function (s, dst) {
+    return (dst || false) ? citethis.Date.CultureInfo.abbreviatedTimeZoneDST[s.toUpperCase()] : 		
+		citethis.Date.CultureInfo.abbreviatedTimeZoneStandard[s.toUpperCase()];
+};
+citethis.Date.getTimezoneAbbreviation = function (offset, dst) {
+    var n = (dst || false) ? citethis.Date.CultureInfo.abbreviatedTimeZoneDST : citethis.Date.CultureInfo.abbreviatedTimeZoneStandard,
+    p;
+    for (p in n) {
+        if (n[p] === offset) {
+            return p;
+        }
+    }
+    return null;
+};
+citethis.Date.getDayName = function (dt, abbrev) {
+    return abbrev ? citethis.Date.CultureInfo.abbreviatedDayNames[dt.getDay()] : citethis.Date.CultureInfo.dayNames[dt.getDay()];
+};
+citethis.Date.getMonthName = function (dt, abbrev) {
+    return abbrev ? citethis.Date.CultureInfo.abbreviatedMonthNames[dt.getMonth()] : citethis.Date.CultureInfo.monthNames[dt.getMonth()];
+};
+citethis.Date.format = function (dt, format) {
+	var self = dt;
+    var p = function p(s) {
+        return (s.toString().length == 1) ? "0" + s : s;
+    };
+    return format ? format.replace(/dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|zz?z?/g, function (format) {
+        switch (format) {
+        case "hh":
+            return p(self.getHours() < 13 ? self.getHours() : (self.getHours() - 12));
+        case "h":
+            return self.getHours() < 13 ? self.getHours() : (self.getHours() - 12);
+        case "HH":
+            return p(self.getHours());
+        case "H":
+            return self.getHours();
+        case "mm":
+            return p(self.getMinutes());
+        case "m":
+            return self.getMinutes();
+        case "ss":
+            return p(self.getSeconds());
+        case "s":
+            return self.getSeconds();
+        case "yyyy":
+            return self.getFullYear();
+        case "yy":
+            return self.getFullYear().toString().substring(2, 4);
+        case "dddd":
+            return citethis.Date.getDayName(dt);
+        case "ddd":
+            return citethis.Date.getDayName(dt, true);
+        case "dd":
+            return p(self.getDate());
+        case "d":
+            return self.getDate().toString();
+        case "MMMM":
+            return citethis.Date.getMonthName(dt);
+        case "MMM":
+            return citethis.Date.getMonthName(dt, true);
+        case "MM":
+            return p((self.getMonth() + 1));
+        case "M":
+            return self.getMonth() + 1;
+        case "t":
+            return self.getHours() < 12 ? 'A' : 'P';
+        case "tt":
+            return self.getHours() < 12 ? 'AM' : 'PM';
+        case "zzz":
+        case "zz":
+        case "z":
+            return "";
+        }
+    }) : this._toString();
+};
+
 window.addEventListener("load", function(e) { citethis.onLoad(e); }, false);
 window.addEventListener("unload", function(e) { citethis.shutdown(e); }, false);
 

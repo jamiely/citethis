@@ -27,30 +27,32 @@
 
 
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" style="height: 50px">
+<hbox id="citethisRoot">
 	<vbox id="vboxCitation">
 		<hbox flex="1">
 			<textbox flex="1" id="txtCitationText" accesskey="" value="citethis text"/>
+			<button label="Add &gt;" id="btnAddToCitationList" />
 		</hbox>
 	    <hbox>
 
 	        <label control="txtAuthor" accesskey="" value="Author"/>
-	        <textbox id="txtAuthor" value=""/>
+	        <textbox id="txtAuthor" value="" width="80" />
 
-	        <label control="txtYearPublished" accesskey="" value="Year of Publication"/>
-	        <textbox id="txtYearPublished" value="" maxLength="4" />
+	        <label control="txtYearPublished" accesskey="" value="Year"/>
+	        <textbox id="txtYearPublished" value="" maxLength="4" width="50" />
 
 	        <label control="txtTitle" accesskey="" value="Title"/>
-	        <textbox id="txtTitle" value=""/>
+	        <textbox id="txtTitle" value="" width="100" />
 
 
 	        <label control="txtURL" accesskey="" value="URL"/>
-	        <textbox id="txtURL" value=""/>
+	        <textbox id="txtURL" value="" width="100" />
 
-			<label control="txtLastAccessed" accesskey="" value="Last Accessed"/>
-	        <textbox id="txtLastAccessed" value=""/>
+			<label control="txtLastAccessed" accesskey="" value="Accessed"/>
+	        <textbox id="txtLastAccessed" value="" width="50" />
 
-			<label control="txtLastUpdated" accesskey="" value="Last Updated"/>
-	        <textbox id="txtLastUpdated" value=""/>
+			<label control="txtLastUpdated" accesskey="" value="Updated"/>
+	        <textbox id="txtLastUpdated" value="" width="50" />
 
 			<label id="lblCitationStyle" value="" />
 		</hbox>
@@ -61,5 +63,10 @@
 		</hbox>
         -->
 	</vbox>
-  </window>
+	<vbox id="vboxCitationList">
+                    <label control="citationList" value="Citation List" />
+		<textbox flex="1" width="300" multiline="true" id="citationList" onfocus="this.select()" onclick="this.select()" />
+	</vbox>
+</hbox>
+</window>
 </overlay>
