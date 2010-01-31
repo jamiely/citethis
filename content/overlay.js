@@ -1,5 +1,15 @@
 var citethis = {
+  // only works for XUL elements. use citethis.getElement to get page elements.
   $: function (el) { return document.getElementById ( el ); },
+
+  capitalize: function (str) {
+    return str.toLowerCase().replace(/\b\w/g, 
+		function(capture){
+			return capture.toUpperCase();
+		}
+	);	
+  },
+
   citationStyles: {
   	/**
   	 * These are functions which return a citation template. The variables
@@ -7,7 +17,8 @@ var citethis = {
   	 * @param {Object} data
   	 */
   	apa: function(data) {
-		// apa specifies using not disclosed when the year is unknown http://owl.english.purdue.edu/owl/resource/560/10/
+		// apa specifies using not disclosed when the year is 
+		// unknown http://owl.english.purdue.edu/owl/resource/560/10/
         var year = !data.year || data.year == '' ? "n.d." : "$year";
 
 		// date should be spelled out!
@@ -43,7 +54,7 @@ var citethis = {
   dateformat: "MMMM dd, yyyy",
   debug: function ( msg ){
 
-  	return;
+  	//return;
 
   	var n = new Date(),
 		timestamp = [
@@ -283,24 +294,18 @@ var citethis = {
 			citethis.debug ( "root: " + root );
 			if (root) {
 				citethis.debug("root tag : " + root.tagName);
-				//citethis.debug("innerhtml: \n" + root.innerHTML);
 			}
 		}
 		var head = citethis.doc.getElementsByTagName ("head");
 		citethis.debug ( "head length: " + head.length );
-		//if (head.length > 0) {
-			//head = head[0];
-			//var meta = head.getElementsByTagName("meta"); // retrieve all of the document's meta tags
-			var meta = citethis.doc.getElementsByTagName("meta");
-			citethis.debug("meta.length = " + meta.length);
-			//citethis.debug ("innerhtml\n" + head.innerHTML);
-			citethis.debug("parts.length = " + citethis.doc.getElementsByTagName("script").length);
-			for (var i = 0; i < meta.length; i++) {
-				if (meta[i].name && meta[i].name == metaTagName) {
-					return meta[i];
-				}
+		var meta = citethis.doc.getElementsByTagName("meta");
+		citethis.debug("meta.length = " + meta.length);
+		citethis.debug("parts.length = " + citethis.doc.getElementsByTagName("script").length);
+		for (var i = 0; i < meta.length; i++) {
+			if (meta[i].name && meta[i].name.toLowerCase() == metaTagName) {
+				return meta[i];
 			}
-		//}
+		}
 	}
 	catch ( e ) {
 		alert ( e.message );
@@ -325,6 +330,45 @@ var citethis = {
 		getTitle: function () {
 			return document.title.replace(/ - Wikipedia.+/, '');
 		}
+	},
+	CNN: {
+		is: function() {
+			return /cnn\.com\//i.test(gURLBar.value);
+		},
+		getAuthor: function() {
+			var els = citethis.doc.getElementsByClassName('cnn_strycbftrtxt');
+			if (els && els.length > 0 ) {
+				var e = els[0],
+				 	matches = /^cnn's(.+) contributed.+/ig.exec(e.innerHTML);
+				if (matches && matches.length > 1 ) {
+					return matches[1];
+				}
+			}
+			// try getting meta author
+			var metaAuthor = citethis.getMetaTag ( "author" );
+			if ( metaAuthor ) {
+				var c = metaAuthor.content,
+					parts = c.split(',');
+				parts = parts.slice(0, parts.length-1);
+				return parts.join (',');
+			}
+			return null;
+		},
+		getTitle: function() {
+			return document.title.replace(/ - CNN.+/, '');
+		}
+	},
+	Huffington: {
+		is: function () {
+			return /huffingtonpost\.com/i.test ( gURLBar.value );
+		},
+		getAuthor: function () {
+			var els = citethis.doc.getElementsByClassName('wire_author');
+			if ( els && els.length > 0 ) {
+				return els[0].innerHTML;
+			}
+			return null;
+		}
 	}
   },
 
@@ -341,17 +385,64 @@ var citethis = {
 	return null;
   },
 
+  formatAuthor: function ( author ) {
+    try {
+		return author ? citethis.capitalize ( 
+				author.
+					replace(/\s+/g, ' '). // replace all whitespace with spaces
+					replace(/^\s?by */i, '') // remove "by"
+			) : 
+			'';
+    }
+	catch (e){
+		alert ( 'formatAuthor exception: ' + e );
+		return '';
+	}
+  },
+
+  /**
+   * Check to see if there is an element with ID "byline"
+   */
+  getAuthorHasBylineElement: function () {
+	
+	var el = citethis.getElement('byline'),
+		rtn = null;
+	citethis.debug ('getAuthorHasBylineElement started ' + el);
+	if (el) {
+		citethis.debug ('getAuthorHasBylineElement: has el' + el);
+		var val = el.value || el.innerHTML;
+		if (val && val != '') {
+			rtn = val;
+		}
+	}
+	return rtn;
+  },
+
+  getElement: function ( id ) {
+	return citethis.doc.getElementById ( id );
+  },
+
   getAuthor: function () {
   	var author = "Last, First",
 		metaByl = citethis.getMetaTag ( "byl" ),
+		metaAuthor = citethis.getMetaTag ( "author" ),
 		siteSpec =  citethis.getSiteSpecific('getAuthor');
 
     citethis.debug("author: " + siteSpec);
-    if ( siteSpec || siteSpec == '' ) return siteSpec;
+    if ( siteSpec || siteSpec == '' ) return citethis.formatAuthor (siteSpec);
 
 	try {
 		citethis.debug ( "metaByl: " + metaByl );
-		if ( metaByl ) {
+		citethis.debug ( "metaAuthor: " + metaAuthor );
+		var first = citethis.getAuthorHasBylineElement();
+		
+		if ( first ) {
+			author = first;
+		}
+		else if ( metaAuthor ) {
+			author = metaAuthor.content;
+		}
+		else if ( metaByl ) {
 			// check for a byline meta element
 			author = metaByl.content;
 		}
@@ -383,7 +474,7 @@ var citethis = {
 	catch(e){
 		alert ( e.message );
 	}
-	return String(author).replace(/^by */i, '');
+	return citethis.formatAuthor (author);
   },
 
   getYearPublished: function () {
