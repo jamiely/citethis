@@ -108,7 +108,6 @@ var citethis = {
 		citethis.debug(6);
 		
 		citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
-
 	}
 	catch (e) {
 		citethis.debug ( 'Load issue: ' + e.message );

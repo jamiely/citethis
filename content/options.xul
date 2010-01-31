@@ -29,16 +29,18 @@
   </hbox>
 
   <hbox flex="1">
-        <label value="Uses DateJS format specified http://code.google.com/p/datejs/wiki/FormatSpecifiers" />
+        <label class="text-link" 
+			value="Uses DateJS format specified http://code.google.com/p/datejs/wiki/FormatSpecifiers"
+  			href="http://code.google.com/p/datejs/wiki/FormatSpecifiers" />
   </hbox>
   <hbox flex="1">
      <label control="dateformat" value="Date Format String (International format:dd MMM yyyy). " />
      <textbox preference="pref_dateformat" id="dateformat" label="Date Format" />
   </hbox>
-  <hbox flex="1">
+  <hbox flex="1" style="display: none">
 		<label value="'$author $year $title $url $lastAccessed are availabe variables.'" />
 	</hbox>
-	<hbox flex="1">
+	<hbox flex="1"  id="citethis-hboxCustomCitation" style="display: none">
 		<label control="citationStyleCustom" value="Custom citation: " />
 		<textbox preference="pref_citation_style_custom" id="citationStyleCustom" label="Custom" />
 	</hbox>
