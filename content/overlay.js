@@ -64,7 +64,7 @@ var citethis = {
 
   addCitationToList: function(newCitation) {
 	newCitation = newCitation || citethis.getCitationText ();
-	citethis.$('citationList').value += newCitation;
+	citethis.$('citationList').value += newCitation + '\n';
   },
 
   onLoad: function() {
