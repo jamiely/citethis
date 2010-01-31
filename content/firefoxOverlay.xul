@@ -57,11 +57,11 @@
 			<label id="lblCitationStyle" value="" />
 		</hbox>
 
-		<!-- uncomment when debugging
+		<!-- uncomment when debugging        -->
 		<hbox flex="1">
 			<textbox flex="1" id="txtDebug" accesskey="" value="" multiline ="true"/>
 		</hbox>
-        -->
+
 	</vbox>
 	<vbox id="vboxCitationList">
                     <label control="citationList" value="Citation List (Copy to Paste Elsewhere)" />
