@@ -58,7 +58,7 @@
 		</hbox>
 
 		<!-- uncomment when debugging        -->
-		<hbox flex="1">
+		<hbox flex="1" id="hboxDebug">
 			<textbox flex="1" id="txtDebug" accesskey="" value="" multiline ="true"/>
 		</hbox>
 

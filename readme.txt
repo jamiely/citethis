@@ -12,3 +12,4 @@ Uses DateJS format specified http://code.google.com/p/datejs/wiki/FormatSpecifie
 ** CNET
 ** ABCNews
 ** Yahoo News (AP)
+* Added citation listbox Kassie Turner

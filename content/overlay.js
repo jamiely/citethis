@@ -1,4 +1,5 @@
 var citethis = {
+  DEBUG: false,
   // only works for XUL elements. use citethis.getElement to get page elements.
   $: function (el) { return document.getElementById ( el ); },
 
@@ -53,20 +54,23 @@ var citethis = {
   citationStyleCustom: '',
   dateformat: "MMMM dd, yyyy",
   debug: function ( msg ){
+  	if(citethis.DEBUG) {
+	  	var n = new Date(),
+			timestamp = [
+				n.getFullYear(),
+				n.getMonth(),
+				n.getDate (),
+				n.getHours(),
+				n.getMinutes(),
+				n.getSeconds()
+				].join ("");
 
-  	//return;
+	  	citethis.$('txtDebug').value = timestamp + ': ' + msg + '\n' + citethis.$('txtDebug').value;
+	}
+	else {
+		return;
+	}
 
-  	var n = new Date(),
-		timestamp = [
-			n.getFullYear(),
-			n.getMonth(),
-			n.getDate (),
-			n.getHours(),
-			n.getMinutes(),
-			n.getSeconds()
-			].join ("");
-
-  	citethis.$('txtDebug').value = timestamp + ': ' + msg + '\n' + citethis.$('txtDebug').value;
   },
 
   clearCitationList: function() {
@@ -81,6 +85,7 @@ var citethis = {
   onLoad: function() {
   	try {
 		// initialization code
+
 
 		this.initialized = true;
 		this.strings = document.getElementById("citethis-strings");
@@ -119,6 +124,15 @@ var citethis = {
 		citethis.debug(6);
 		
 		citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
+		
+		
+		if ( !citethis.DEBUG) {
+			var d1 = citethis.$('txtDebug'),
+				d2 = citethis.$('hboxDebug');
+			if(d1) d1.style.display = 'none';
+			if(d2) d2.style.display = 'none';
+		}
+		
 	}
 	catch (e) {
 		citethis.debug ( 'Load issue: ' + e.message );
