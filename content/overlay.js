@@ -314,7 +314,7 @@ var citethis = {
   },
 
   _reduceWhitespace: function ( str ) {
-  	return str.replace (/\s{2,}/, ' ');
+  	return str.replace (/\s+/, ' ');
   },
 
   siteSpecific: {
@@ -363,13 +363,45 @@ var citethis = {
 			return /huffingtonpost\.com/i.test ( gURLBar.value );
 		},
 		getAuthor: function () {
-			var els = citethis.doc.getElementsByClassName('wire_author');
-			if ( els && els.length > 0 ) {
-				return els[0].innerHTML;
-			}
-			return null;
+			return citethis.getFirstElementByClass ('wire_author');
+		}
+	},
+	ABCNews: {
+		is: function () {
+			return /abcnews\.go\.com/i.test (gURLBar.value);
+		},
+		getAuthor: function () {
+			var a = citethis.getFirstElementByClass ('story_byline', 'textContent');
+			
+			return a ? a.replace(/ABC.+/i, ''): null;
+		}
+	},
+	FoxNews: {
+		is: function () { return /fox\w+\.com/i.test(gURLBar.value); },
+		getTitle: function () {
+			return document.title.
+				replace(/.*FOXNews.com\s+-\s+/i, '').
+				replace(/ - FOX.+/i, '');
 		}
 	}
+	// ,
+	// 	Reuters: {
+	// 		is: function () { return /reuters\.com/i.test(gURLBar.value); },
+	// 		getTitle: function () {
+	// 			return document.title.replace(/ \| Reuters.*/i, '');
+	// 		}
+	// 	}
+  },
+
+  
+
+  getFirstElementByClass: function (className, prop) {
+		prop = prop || 'innerHTML';
+		var els = citethis.doc.getElementsByClassName(className); 
+		if ( els && els.length > 0 ) {
+			return els[0][prop];
+		}
+		return null;
   },
 
   getSiteSpecific: function(funcName) {
@@ -385,14 +417,31 @@ var citethis = {
 	return null;
   },
 
+  /**
+   * Will remove whitespace from either side of the string.
+   * will also remove non-word characters at end of string.
+   */
+  trim: function(str) {
+	return str.replace(/^\s+/, '').replace(/[\s\W]+$/, ''); //trim
+  },
+
   formatAuthor: function ( author ) {
     try {
-		return author ? citethis.capitalize ( 
-				author.
-					replace(/\s+/g, ' '). // replace all whitespace with spaces
-					replace(/^\s?by */i, '') // remove "by"
-			) : 
-			'';
+		if (author) {			
+			author = citethis._reduceWhitespace (author);
+			
+			
+			author = author.replace(/^\s*by */i, ''); // remove "by"
+			
+			// deal with associated press? 
+			author = author.replace(/,\s*Associated Press[.\s\S]+$/ig, '');
+			author = author.replace(/,\s*AP[.\s\S]+$/g, '');
+			
+			author = citethis.trim (author);
+			author = citethis.capitalize (author);
+			return author;
+		}
+		return '';
     }
 	catch (e){
 		alert ( 'formatAuthor exception: ' + e );
@@ -439,16 +488,18 @@ var citethis = {
 		if ( first ) {
 			author = first;
 		}
-		else if ( metaAuthor ) {
+		else if ( metaAuthor && metaAuthor.content != '') {
 			author = metaAuthor.content;
 		}
-		else if ( metaByl ) {
+		else if ( metaByl && metaByl.content != '' ) {
 			// check for a byline meta element
 			author = metaByl.content;
 		}
 		else {
 			// see if there are any elements marked byline
 			var elByl = citethis.doc.getElementsByClassName ( "byline" );
+			
+			citethis.debug('byline elements:' + elByl.length);
 
 			if ( elByl && elByl.length > 0 ) {
 				// strip and stripTags functions from prototypejs
@@ -460,13 +511,20 @@ var citethis = {
 ;
 			}
 			else {
-				var parts = citethis.doc.body ? citethis.doc.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
-				citethis.debug ( "parts: " + parts );
-				if ( parts && parts[0] ) {
-					author = citethis._reduceWhitespace ( parts[0] );
+				// check for author elements
+				var elAuthorText = citethis.getFirstElementByClass('author', 'textContent');
+				if(elAuthorText && elAuthorText != '') {
+					author = elAuthorText;
 				}
 				else {
-					// other fail-safes
+					var parts = citethis.doc.body ? citethis.doc.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
+					citethis.debug ( "parts: " + parts );
+					if ( parts && parts[0] ) {
+						author = citethis._reduceWhitespace ( parts[0] );
+					}
+					else {
+						// other fail-safes
+					}
 				}
 			}
 		}
@@ -499,14 +557,41 @@ var citethis = {
 	return citethis.Date.format(d, citethis.dateformat);
   },
 
+  getHost: function() {
+	var parts = gURLBar.value.split('/');		
+	return parts[2]; // returns part before com, net'
+  },
+
+  getDomain: function () {
+	var parts = citethis.getHost().split('.');
+	return parts[parts.length-2];
+  },
+
+  formatTitle: function ( title ) {
+	if (!title) return null;
+	
+	var h = citethis.getDomain ();
+	
+	try{
+	// if host appears in title, probably should be removed.
+	title = title.replace (new RegExp('\\b' + h + '\\b', 'ig'), '');
+	citethis.debug('domain: ' + h);
+	title = title.replace (/^\W+/, ''); // replace non-word chars at beginning
+	title = title.replace(/\W+$/, ''); //replace at end 
+	}
+	catch(e){citethis.debug('error in formatTitle:'+e);}
+	return title;
+	
+  },
+
   getTitle: function () {
   	var siteSpec =  citethis.getSiteSpecific('getTitle');
-    if ( siteSpec ) return siteSpec;
+    if ( siteSpec ) return citethis.formatTitle(siteSpec);
 	if ( document.title == "Mozilla Firefox" )
 	   return "Website Title";
 	// some people have reported the browser is attached to title.
 	// i see no such thing! putting this here just in case.
-	return document.title.replace(/ - Mozilla Firefox$/i, '');
+	return citethis.formatTitle(document.title.replace(/ - Mozilla Firefox$/i, ''));
   },
 
   onToolbarButtonCommand: function(e) {
