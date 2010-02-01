@@ -3,6 +3,35 @@ var citethis = {
   // only works for XUL elements. use citethis.getElement to get page elements.
   $: function (el) { return document.getElementById ( el ); },
 
+	timers: [],
+
+	setTimeout: function (fun, ms) {
+		citethis.initTimer (fun, ms, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+	},
+	
+	initTimer: function (fun, ms, type) {
+		try {
+			 // Now it is time to create the timer...  
+			 var timer 
+			   = Components.classes["@mozilla.org/timer;1"]
+			       .createInstance(Components.interfaces.nsITimer);
+
+			 timer.initWithCallback(
+			   { notify: fun },
+			   ms,
+			   type);
+		
+			citethis.timers.push(timer);
+		}
+		catch(e) {
+			citethis.debug('Could not initiate timer because ' + e.message);
+		}
+	},
+	
+	setInterval: function (fun, ms) {
+		citethis.initTimer (fun, ms, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+	},
+
   capitalize: function (str) {
     return str.toLowerCase().replace(/\b\w/g, 
 		function(capture){
@@ -96,7 +125,7 @@ var citethis = {
         citethis.debug ( '1' );
 		citethis.showCitationWindow(false);
 		citethis.setPageVariables(true);
-		window.setInterval(this.checkPage, 1000);
+		citethis.setInterval(this.checkPage, 1000);
 		var e = citethis.$('txtCitationText'), select = function(e){
 			citethis.$('txtCitationText').select();
 		};
@@ -154,7 +183,7 @@ var citethis = {
 			f();
 		}
 		else {
-			window.setTimeout(f, 1000);
+			citethis.setTimeout(f, 1000);
 		}
 	}
 	catch(e) {
