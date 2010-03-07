@@ -36,7 +36,7 @@
 	    <hbox>
 
 	        <label control="txtAuthor" accesskey="" value="Author"/>
-	        <textbox id="txtAuthor" value="" width="80" />
+	        <textbox id="txtAuthor" value="" width="70" />
 
 	        <label control="txtYearPublished" accesskey="" value="Year"/>
 	        <textbox id="txtYearPublished" value="" maxLength="4" width="50" />
@@ -46,13 +46,13 @@
 
 
 	        <label control="txtURL" accesskey="" value="URL"/>
-	        <textbox id="txtURL" value="" width="200" />
+	        <textbox id="txtURL" value="" width="50" />
 
 			<label control="txtLastAccessed" accesskey="" value="Accessed"/>
-	        <textbox id="txtLastAccessed" value="" width="100" />
+	        <textbox id="txtLastAccessed" value="" width="70" />
 
 			<label control="txtLastUpdated" accesskey="" value="Updated"/>
-	        <textbox id="txtLastUpdated" value="" width="100" />
+	        <textbox id="txtLastUpdated" value="" width="70" />
 
 			<label id="lblCitationStyle" value="" />
 		</hbox>
@@ -64,8 +64,8 @@
 
 	</vbox>
 	<vbox id="vboxCitationList">
-                    <label control="citationList" value="Citation List (Copy to Paste Elsewhere)" />
-		<textbox flex="1" width="300" multiline="true" id="citationList" onfocus="this.select()" onclick="this.select()" />
+        <label control="citationList" value="Citation List (Copy to Paste Elsewhere)" />
+		<textbox flex="1" width="100%" multiline="true" id="citationList" onfocus="this.select()" onclick="this.select()" />
 	</vbox>
 </hbox>
 </window>
