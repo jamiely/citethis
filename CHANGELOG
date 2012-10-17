@@ -1,0 +1,14 @@
+[JAL 20121018]
+* Added Harvard Style Citations
+
+[JAL 20100131023037]
+* Removed datejs requirements. 
+* Added site specific functions
+** Washington Post
+** CNN
+** Huffington Post
+** FoxNews
+** CNET
+** ABCNews
+** Yahoo News (AP)
+* Added citation listbox Kassie Turner

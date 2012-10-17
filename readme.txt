@@ -1,15 +1,12 @@
+# Support
+
 citethis@angelforge.org
+
+# Site
+
 http://www.angelforge.org/CiteThis/
+
+# Date Formatters
+
 Uses DateJS format specified http://code.google.com/p/datejs/wiki/FormatSpecifiers
 
-[JAL 20100131023037]
-* Removed datejs requirements. 
-* Added site specific functions
-** Washington Post
-** CNN
-** Huffington Post
-** FoxNews
-** CNET
-** ABCNews
-** Yahoo News (AP)
-* Added citation listbox Kassie Turner
