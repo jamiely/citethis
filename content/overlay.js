@@ -47,34 +47,41 @@ var citethis = {
   	 * @param {Object} data
   	 */
   	apa: function(data) {
-		// apa specifies using not disclosed when the year is 
-		// unknown http://owl.english.purdue.edu/owl/resource/560/10/
-        var year = !data.year || data.year == '' ? "n.d." : "$year";
+      // apa specifies using not disclosed when the year is 
+      // unknown http://owl.english.purdue.edu/owl/resource/560/10/
+          var year = !data.year || data.year == '' ? "n.d." : "$year";
 
-		// date should be spelled out!
-		if ( data.author ) {
-			return '$author. ('+year+') $title. Retrieved $lastAccessed, from $url';
-		}
-		else {
-			return '$title. ('+year+') Retrieved $lastAccessed, from $url';
-		}
-	},
-	ama: function(data) {
-		if (data.author) {
-			return '$author. $title. $url. Updated $lastUpdated. Accessed $lastAccessed.';
-		}
-		else {
-			return '$title. $url. Updated $lastUpdated. Accessed $lastAccessed.';
-		}
-	},
-	mla: function (data) {
-		if (data.author) {
-			return '"$title." $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>'
-		}
-		else {
-			return '$author. "$title". $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>';
-		}
-	}
+      // date should be spelled out!
+      if ( data.author ) {
+        return '$author. ('+year+') $title. Retrieved $lastAccessed, from $url';
+      }
+      else {
+        return '$title. ('+year+') Retrieved $lastAccessed, from $url';
+      }
+    },
+    harvard: function(data) {
+      var base = '$title. Available from: <$url>. [$lastAccessed].'
+      if(data.author) {
+        base ='$author. n.d., ' + base; 
+      }
+      return base;
+    },
+    ama: function(data) {
+      if (data.author) {
+        return '$author. $title. $url. Updated $lastUpdated. Accessed $lastAccessed.';
+      }
+      else {
+        return '$title. $url. Updated $lastUpdated. Accessed $lastAccessed.';
+      }
+    },
+    mla: function (data) {
+      if (data.author) {
+        return '"$title." $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>'
+      }
+      else {
+        return '$author. "$title". $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>';
+      }
+    }
   },
 
   prefs: null,

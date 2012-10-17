@@ -21,6 +21,7 @@
 			<menuitem label="APA" value="apa" />
 			<menuitem label="AMA" value="ama" />
 			<menuitem label="MLA" value="mla" />
+			<menuitem label="Harvard" value="harvard" />
 		</menupopup>
 	</menulist>
 
