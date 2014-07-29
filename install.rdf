@@ -4,10 +4,10 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>citethis@angelforge.org</em:id>
     <em:name>Cite This!</em:name>
-    <em:version>0.21</em:version>
+    <em:version>0.22</em:version>
     <em:creator>Jamie Ly</em:creator>
     <em:description>Cite this allows you to easily retrieve citations for the websites you visit.</em:description>
-    <em:homepageURL>http://www.angelforge.org/CiteThis</em:homepageURL>
+    <em:homepageURL>https://github.com/jamiely/citethis</em:homepageURL>
     <em:iconURL>chrome://citethis/content/citethis.png</em:iconURL>
 	<em:optionsURL>chrome://citethis/content/options.xul</em:optionsURL>
 

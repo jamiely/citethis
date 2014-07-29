@@ -1,8 +1,11 @@
+[JAL 20140729]
+* Fixed display of add-on button.
+
 [JAL 20121018]
 * Added Harvard Style Citations
 
 [JAL 20100131023037]
-* Removed datejs requirements. 
+* Removed datejs requirements.
 * Added site specific functions
 ** Washington Post
 ** CNN

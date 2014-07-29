@@ -6,7 +6,7 @@
   }
 
 #citethis-statusbar-panel{
-      list-style-image: url("chrome://citethis/skin/icon.png");
+      list-style-image: url("chrome://citethis/skin/toolbar-button.png");
 }
 
 #txtCitationText { width: 100%; }
