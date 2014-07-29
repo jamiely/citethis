@@ -1,5 +1,6 @@
 [JAL 20140729]
 * Fixed display of add-on button.
+* Namespaced preferences under `extensions.citethis@angelforge.org`.
 
 [JAL 20121018]
 * Added Harvard Style Citations

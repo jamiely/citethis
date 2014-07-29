@@ -7,14 +7,12 @@
 
 <prefpane id="citethis-pane" label="CiteThis! Settings">
   <preferences>
-    <preference id="pref_citation_style" name="citethis.citationStyle" type="string"/>
-	<preference id="pref_dateformat" name="citethis.dateformat" type="string"/>
-	<preference id="pref_citation_style_custom" name="citethis.citationStyleCustom" type="string"/>
+    <preference id="pref_citation_style" name="extensions.citethis@angelforge.org.citationStyle" type="string"/>
+	<preference id="pref_dateformat" name="extensions.citethis@angelforge.org.dateformat" type="string"/>
   </preferences>
 
   <hbox align="center">
     <label control="symbol" value="Citation style: "/>
-    <!--<textbox preference="pref_citation_style" id="citationStyle" maxlength="4"/>-->
 
 	<menulist preference="pref_citation_style" id="citationStyle" label="Citation Style">
 		<menupopup>
@@ -40,10 +38,6 @@
   </hbox>
   <hbox flex="1" style="display: none">
 		<label value="'$author $year $title $url $lastAccessed are availabe variables.'" />
-	</hbox>
-	<hbox flex="1"  id="citethis-hboxCustomCitation" style="display: none">
-		<label control="citationStyleCustom" value="Custom citation: " />
-		<textbox preference="pref_citation_style_custom" id="citationStyleCustom" label="Custom" />
 	</hbox>
 </prefpane>
 

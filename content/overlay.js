@@ -1,5 +1,11 @@
 var citethis = {
-  DEBUG: false,
+  DEBUG: true,
+
+  // retrieve a preference by name
+  getPref: function(name) {
+      return this.prefs.getCharPref(name);
+  },
+
   // only works for XUL elements. use citethis.getElement to get page elements.
   $: function (el) { return document.getElementById ( el ); },
 
@@ -150,7 +156,9 @@ var citethis = {
 
 		// setup preferences
 
-		this.prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefService).getBranch("citethis.");
+		this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
+            getService(Components.interfaces.nsIPrefService).
+            getBranch("extensions.citethis@angelforge.org.");
 		this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 		this.prefs.addObserver("", this, false);
         citethis.debug(4);
@@ -204,7 +212,7 @@ var citethis = {
         citethis.debug("Got Date Format");
 
 		citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
-		citethis.debug("Got citation style");
+		citethis.debug("Got citation style: " + citethis.citationStyle);
 	    citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
 		citethis.debug("Got Custom Style");
 	    citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
@@ -307,6 +315,7 @@ var citethis = {
 
 
   getCitation: function ( template ) {
+    citethis.debug('Get citation using style: ' + citethis.citationStyle);
   	var selectedTemplate = citethis.citationStyles[citethis.citationStyle];
   	template = template || selectedTemplate || citethis.citationStyles.apa;
 

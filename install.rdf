@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
- xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>citethis@angelforge.org</em:id>
     <em:name>Cite This!</em:name>
@@ -9,7 +9,8 @@
     <em:description>Cite this allows you to easily retrieve citations for the websites you visit.</em:description>
     <em:homepageURL>https://github.com/jamiely/citethis</em:homepageURL>
     <em:iconURL>chrome://citethis/content/citethis.png</em:iconURL>
-	<em:optionsURL>chrome://citethis/content/options.xul</em:optionsURL>
+    <em:optionsURL>chrome://citethis/content/options.xul</em:optionsURL>
+    <em:type>2</em:type>
 
     <em:targetApplication>
       <Description>
