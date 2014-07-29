@@ -159,7 +159,7 @@ var citethis = {
 		this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
             getService(Components.interfaces.nsIPrefService).
             getBranch("extensions.citethis@angelforge.org.");
-		this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+		this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
 		this.prefs.addObserver("", this, false);
         citethis.debug(4);
 		citethis.updateCitationStyle();
