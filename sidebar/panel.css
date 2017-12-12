@@ -11,6 +11,10 @@ body {
   background-color: #F4F7F8;
 }
 
+#txtDebug {
+  height: 200px;
+}
+
 p {
   margin: 1em 2em;
 }

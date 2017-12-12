@@ -6,23 +6,22 @@
     <link rel="stylesheet" href="panel.css"/>
   </head>
 
-<body>
+<body id="citethisRoot">
   <div id="content">
-    <form>
-      <label><textarea id="citation"></textarea></label>
-      <label>Author   <input type="text" id="author"></label>
-      <label>Year     <input type="text" id="year"></label>
-      <label>Title    <input type="text" id="title"></label>
-      <label>URL      <input type="text" id="url"></label>
-      <label>Accessed <input type="text" id="accessed"></label>
-      <label>Updated  <input type="text" id="updated"></label>
-      <button>Add &gt;</button>
-      <label>Citation List (Copy to Paste Elsewhere)
-        <textarea id="citationList"></textarea>
-      </label>
-    </form>
+    <label><textarea id="txtCitationText"></textarea></label>
+    <label>Author   <input type="text" id="txtAuthor"></label>
+    <label>Year     <input type="text" id="txtYearPublished"></label>
+    <label>Title    <input type="text" id="txtTitle"></label>
+    <label>URL      <input type="text" id="txtURL"></label>
+    <label>Accessed <input type="text" id="txtLastAccessed"></label>
+    <label>Updated  <input type="text" id="txtLastUpdated"></label>
+    <button id="btnAddToCitationList">Add &gt;</button>
+    <label>Citation List (Copy to Paste Elsewhere)
+      <textarea id="citationList"></textarea>
+    </label>
+    <textarea id="txtDebug"></textarea>
   </div>
-  <script src="panel.js"></script>
+  <script src="citethis.js"></script>
 </body>
 
 </html>

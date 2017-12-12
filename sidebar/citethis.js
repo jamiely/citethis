@@ -7,37 +7,35 @@ var citethis = {
   },
 
   // only works for XUL elements. use citethis.getElement to get page elements.
-  $: function (el) { return document.getElementById ( el ); },
+  $: function (el) {
+    let element = document.getElementById ( el );
+    if(! element) {
+      citethis.debug('Element was null: ' + el);
+    }
+    return element;
+  },
 
 	timers: [],
 
-	setTimeout: function (fun, ms) {
-		citethis.initTimer (fun, ms, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
-	},
-	
-	initTimer: function (fun, ms, type) {
-		try {
-			 // Now it is time to create the timer...  
-			 var timer 
-			   = Components.classes["@mozilla.org/timer;1"]
-			       .createInstance(Components.interfaces.nsITimer);
+	//initTimer: function (fun, ms, type) {
+		//try {
+			 //// Now it is time to create the timer...  
+			 //var timer 
+				 //= Components.classes["@mozilla.org/timer;1"]
+						 //.createInstance(Components.interfaces.nsITimer);
 
-			 timer.initWithCallback(
-			   { notify: fun },
-			   ms,
-			   type);
+			 //timer.initWithCallback(
+				 //{ notify: fun },
+				 //ms,
+				 //type);
 		
-			citethis.timers.push(timer);
-		}
-		catch(e) {
-			citethis.debug('Could not initiate timer because ' + e.message);
-		}
-	},
+			//citethis.timers.push(timer);
+		//}
+		//catch(e) {
+			//citethis.debug('Could not initiate timer because ' + e.message);
+		//}
+	//},
 	
-	setInterval: function (fun, ms) {
-		citethis.initTimer (fun, ms, Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
-	},
-
   capitalize: function (str) {
     return str.toLowerCase().replace(/\b\w/g, 
 		function(capture){
@@ -124,21 +122,45 @@ var citethis = {
 	citethis.$('citationList').value += newCitation + '\n';
   },
 
+  getActiveTab () {
+    return browser.tabs.query({
+      active: true
+    }).then(function(ts) {
+      if(ts.length == 0) {
+        return;
+      }
+      let tab = ts[0];
+      citethis._cachedUrl = tab.url;
+      //citethis.debug(JSON.stringify(tab));
+      return tab;
+    });
+  },
+
+  getTitlePromise() {
+    return citethis.getTabProp('title');
+  },
+
+  getTabProp(propName) {
+    return citethis.getActiveTab().then((tab) => {
+      return tab[propName];
+    });
+  },
+
+
   onLoad: function() {
   	try {
 		// initialization code
 
-
 		this.initialized = true;
-		this.strings = document.getElementById("citethis-strings");
-		document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", function(e){
-			this.showContextMenu(e);
-		}, false);
+		//document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", function(e){
+			//this.showContextMenu(e);
+		//}, false);
 
         citethis.debug ( '1' );
 		citethis.showCitationWindow(false);
+        citethis.debug ( '1a' );
 		citethis.setPageVariables(true);
-		citethis.setInterval(this.checkPage, 1000);
+		setInterval(this.checkPage, 1000);
 		var e = citethis.$('txtCitationText'), select = function(e){
 			citethis.$('txtCitationText').select();
 		};
@@ -156,11 +178,11 @@ var citethis = {
 
 		// setup preferences
 
-		this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
-            getService(Components.interfaces.nsIPrefService).
-            getBranch("extensions.citethis@angelforge.org.");
-		this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
-		this.prefs.addObserver("", this, false);
+		//this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
+            //getService(Components.interfaces.nsIPrefService).
+            //getBranch("extensions.citethis@angelforge.org.");
+		//this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
+		//this.prefs.addObserver("", this, false);
         citethis.debug(4);
 		citethis.updateCitationStyle();
 		citethis.debug(5);
@@ -188,22 +210,23 @@ var citethis = {
    * @param {Object} immediateUpdate
    */
   updateCitation: function ( immediateUpdate ) {
-  	try {
-		if (!citethis.citethisWindowIsVisible())
-			return;
+    try {
+      if (!citethis.citethisWindowIsVisible())
+        return;
 
-		immediateUpdate = immediateUpdate === true;
-		var f = citethis.setPageVariables;
-		if (immediateUpdate) {
-			f();
-		}
-		else {
-			citethis.setTimeout(f, 1000);
-		}
-	}
-	catch(e) {
-		citethis.debug(e.message);
-	}
+      citethis.debug('updateCitation: a');
+      immediateUpdate = immediateUpdate === true;
+      var f = citethis.setPageVariables;
+      if (immediateUpdate) {
+        f();
+      }
+      else {
+        setTimeout(f, 1000);
+      }
+    }
+    catch(e) {
+      citethis.debug(e.message);
+    }
   },
 
   updateCitationStyle: function () {
@@ -268,28 +291,40 @@ var citethis = {
    * citation.
    */
   generateCitation: function () {
-	citethis.$('txtCitationText').value = citethis.getCitation ();
+    citethis.$('txtCitationText').value = citethis.getCitation ();
   },
 
   getCitationText: function () {
 	return citethis.$('txtCitationText').value;
   },
 
-  setPageVariables: function ( setLastAccessed ) {
-  	citethis.doc = window._content.document;
-  	citethis._isFirstRun = true;
-	//setLastAccessed = setLastAccessed === true;
-	setLastAccessed = true;
-	citethis.$('txtAuthor').value = citethis.getAuthor ();
-	citethis.$('txtYearPublished').value = citethis.getYearPublished ();
-	citethis.$('txtTitle').value = citethis.getTitle ();
-	citethis.$('txtURL').value = citethis.getURL ();
-	if ( setLastAccessed ) {
-		citethis.$('txtLastAccessed').value = citethis.getLastAccessed ();
-		citethis.$('txtLastUpdated').value = citethis.getLastUpdated ();
-	}
+  _cachedUrl: '',
 
-	citethis.generateCitation ();
+  setPageVariables: function( setLastAccessed ) {
+    citethis.getActiveTab().then((tab) => {
+      citethis._setPageVariables(tab.url, tab.title, setLastAccessed);
+    });
+  },
+
+  _setPageVariables: function ( url, title, setLastAccessed ) {
+    citethis.doc = document;
+    citethis._isFirstRun = true;
+    //setLastAccessed = setLastAccessed === true;
+    setLastAccessed = true;
+    citethis.$('txtAuthor').value = citethis.getAuthor ();
+    citethis.$('txtYearPublished').value = citethis.getYearPublished ();
+    citethis.$('txtTitle').value = citethis.getTitle (title);
+    citethis.debug('got title');
+    citethis.$('txtURL').value = citethis.getURL();
+    citethis.debug('got url');
+    if ( setLastAccessed ) {
+      citethis.$('txtLastAccessed').value = citethis.getLastAccessed ();
+      citethis.$('txtLastUpdated').value = citethis.getLastUpdated ();
+    }
+
+    citethis.debug('Generating citation...');
+    citethis.generateCitation ();
+    citethis.debug('Generated citation...');
 
   },
 
@@ -299,46 +334,38 @@ var citethis = {
     document.getElementById("context-citethis").hidden = gContextMenu.onImage;
   },
   onMenuItemCommand: function(e) {
-    var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                  .getService(Components.interfaces.nsIPromptService);
-    // promptService.alert(window, this.strings.getString("helloMessageTitle"),
-                                // this.strings.getString("helloMessage"));
-	//promptService.alert ( window, 'Citation', citethis.getCitation () );
-	citethis.openCitationDialog ();
+    //var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                  //.getService(Components.interfaces.nsIPromptService);
+	//citethis.openCitationDialog ();
   },
-
-  alert: function (msg) {
-	var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                  .getService(Components.interfaces.nsIPromptService);
-    promptService.alert(window, 'Message', msg);
-  },
-
 
   getCitation: function ( template ) {
+    citethis.citationStyle = 'apa';
     citethis.debug('Get citation using style: ' + citethis.citationStyle);
-  	var selectedTemplate = citethis.citationStyles[citethis.citationStyle];
-  	template = template || selectedTemplate || citethis.citationStyles.apa;
+    var selectedTemplate = citethis.citationStyles[citethis.citationStyle];
+    template = template || selectedTemplate || citethis.citationStyles.apa;
 
-	// if there is a custom template specified, use it here.
-	if ( citethis.citationStyleCustom && citethis.citationStyleCustom != '') {
-		template = citethis.citationStyleCustom;
-	}
+    // if there is a custom template specified, use it here.
+    if ( citethis.citationStyleCustom && citethis.citationStyleCustom != '') {
+      template = citethis.citationStyleCustom;
+    }
 
-	var p = {
-		author: citethis.$('txtAuthor').value,
-		year: citethis.$('txtYearPublished').value,
-		title: citethis.$('txtTitle').value,
-		url: citethis.$('txtURL').value,
-		lastAccessed: citethis.$('txtLastAccessed').value,
-		lastUpdated: citethis.$('txtLastUpdated').value
-	};
+    var p = {
+      author: citethis.$('txtAuthor').value,
+      year: citethis.$('txtYearPublished').value,
+      title: citethis.$('txtTitle').value,
+      url: citethis.$('txtURL').value,
+      lastAccessed: citethis.$('txtLastAccessed').value,
+      lastUpdated: citethis.$('txtLastUpdated').value
+    };
 
-	// retrieve template using passed data.
+    // retrieve template using passed data.
     if ( typeof template == 'function' ) template = template(p);
-	for ( var key in p ){
-		template = template.replace ( "$" + key, p[key] );
-	}
-	return template;
+    for ( var key in p ){
+      template = template.replace ( "$" + key, p[key] );
+    }
+    citethis.debug('Returning template');
+    return template;
   },
 
   _isFirstRun: true,
@@ -381,18 +408,18 @@ var citethis = {
 		// @todo cache these funcs. change on page load
 		is: function () {
 
-			return /wikipedia\.org\//i.test(gURLBar.value);
+			return /wikipedia\.org\//i.test(citethis.getURL());
 		},
 		getAuthor: function () {
 			return '';
 		},
-		getTitle: function () {
-			return document.title.replace(/ - Wikipedia.+/, '');
+		getTitle: function (title) {
+			return title.replace(/ - Wikipedia.+/, '');
 		}
 	},
 	CNN: {
 		is: function() {
-			return /cnn\.com\//i.test(gURLBar.value);
+			return /cnn\.com\//i.test(citethis.getURL());
 		},
 		getAuthor: function() {
 			var els = citethis.doc.getElementsByClassName('cnn_strycbftrtxt');
@@ -413,13 +440,13 @@ var citethis = {
 			}
 			return null;
 		},
-		getTitle: function() {
-			return document.title.replace(/ - CNN.+/, '');
+		getTitle: function(title) {
+			return title.replace(/ - CNN.+/, '');
 		}
 	},
 	Huffington: {
 		is: function () {
-			return /huffingtonpost\.com/i.test ( gURLBar.value );
+			return /huffingtonpost\.com/i.test ( citethis.getURL() );
 		},
 		getAuthor: function () {
 			return citethis.getFirstElementByClass ('wire_author');
@@ -427,7 +454,7 @@ var citethis = {
 	},
 	ABCNews: {
 		is: function () {
-			return /abcnews\.go\.com/i.test (gURLBar.value);
+			return /abcnews\.go\.com/i.test (citethis.getURL());
 		},
 		getAuthor: function () {
 			var a = citethis.getFirstElementByClass ('story_byline', 'textContent');
@@ -436,18 +463,18 @@ var citethis = {
 		}
 	},
 	FoxNews: {
-		is: function () { return /fox\w+\.com/i.test(gURLBar.value); },
-		getTitle: function () {
-			return document.title.
+		is: function () { return /fox\w+\.com/i.test(citethis.getURL()); },
+		getTitle: function (title) {
+			return title.
 				replace(/.*FOXNews.com\s+-\s+/i, '').
 				replace(/ - FOX.+/i, '');
 		}
 	}
 	// ,
 	// 	Reuters: {
-	// 		is: function () { return /reuters\.com/i.test(gURLBar.value); },
-	// 		getTitle: function () {
-	// 			return document.title.replace(/ \| Reuters.*/i, '');
+	// 		is: function () { return /reuters\.com/i.test(citethis.getURL()); },
+	// 		getTitle: function (title) {
+	// 			return title.replace(/ \| Reuters.*/i, '');
 	// 		}
 	// 	}
   },
@@ -463,17 +490,18 @@ var citethis = {
 		return null;
   },
 
-  getSiteSpecific: function(funcName) {
+  getSiteSpecific: function(funcName, args) {
     // run site specific functions
     for (var site in citethis.siteSpecific) {
-        var funcs = citethis.siteSpecific [ site ]; // set of functions
-        if ( funcs && funcs.is && funcs.is () ) { // if func is exists
-			if (funcs[funcName]) { // if func exists
-				return funcs[funcName]();
-			}
+      var funcs = citethis.siteSpecific [ site ]; // set of functions
+      if ( funcs && funcs.is && funcs.is () ) { // if func is exists
+        if (funcs[funcName]) { // if func exists
+          citethis.debug('Calling site specific func with args: ' + args);
+          return funcs[funcName].apply(this, args);
         }
+      }
     }
-	return null;
+    return null;
   },
 
   /**
@@ -599,7 +627,7 @@ var citethis = {
   },
 
   getURL: function () {
-	return gURLBar.value;
+    return citethis._cachedUrl;
   },
 
   getLastUpdated: function () {
@@ -617,40 +645,59 @@ var citethis = {
   },
 
   getHost: function() {
-	var parts = gURLBar.value.split('/');		
-	return parts[2]; // returns part before com, net'
+    var parts = citethis.getURL().split('/');
+    if(parts.length <= 2) {
+      citethis.debug('No host available');
+      return '';
+    }
+    return parts[2]; // returns part before com, net'
   },
 
   getDomain: function () {
-	var parts = citethis.getHost().split('.');
-	return parts[parts.length-2];
+    var parts = citethis.getHost().split('.');
+    if(parts.length >= 2) return parts[parts.length-2];
+
+    citethis.debug('no domain available');
+    return '';
   },
 
   formatTitle: function ( title ) {
-	if (!title) return null;
-	
-	var h = citethis.getDomain ();
-	
-	try{
-	// if host appears in title, probably should be removed.
-	title = title.replace (new RegExp('\\b' + h + '\\b', 'ig'), '');
-	citethis.debug('domain: ' + h);
-	title = title.replace (/^\W+/, ''); // replace non-word chars at beginning
-	title = title.replace(/\W+$/, ''); //replace at end 
-	}
-	catch(e){citethis.debug('error in formatTitle:'+e);}
-	return title;
-	
+    citethis.debug('formatting ' + title);
+    if (!title) return null;
+
+    citethis.debug('domain?');
+    var h = citethis.getDomain ();
+    citethis.debug('domain: ' + h);
+
+    try{
+      // if host appears in title, probably should be removed.
+      title = title.replace (new RegExp('\\b' + h + '\\b', 'ig'), '');
+      citethis.debug('domain: ' + h);
+      title = title.replace (/^\W+/, ''); // replace non-word chars at beginning
+      title = title.replace(/\W+$/, ''); //replace at end 
+    }
+    catch(e){citethis.debug('error in formatTitle:'+e);}
+    return title;
+
   },
 
-  getTitle: function () {
-  	var siteSpec =  citethis.getSiteSpecific('getTitle');
-    if ( siteSpec ) return citethis.formatTitle(siteSpec);
-	if ( document.title == "Mozilla Firefox" )
-	   return "Website Title";
-	// some people have reported the browser is attached to title.
-	// i see no such thing! putting this here just in case.
-	return citethis.formatTitle(document.title.replace(/ - Mozilla Firefox$/i, ''));
+  getTitle: function (title) {
+    citethis.debug('getTitle: getting');
+    var siteSpec =  citethis.getSiteSpecific('getTitle', [title]);
+    if ( siteSpec ) {
+
+      citethis.debug('getTitle: got site specific title');
+      return citethis.formatTitle(siteSpec);
+    }
+    if ( title == "Mozilla Firefox" )
+      return "Website Title";
+    // some people have reported the browser is attached to title.
+    // i see no such thing! putting this here just in case.
+    citethis.debug('getTitle: formatting title: ' + title);
+    let formatted = citethis.formatTitle(title.replace(/ - Mozilla Firefox$/i, ''));
+
+    citethis.debug('getTitle: formatted');
+    return formatted;
   },
 
   onToolbarButtonCommand: function(e) {
@@ -659,10 +706,10 @@ var citethis = {
   },
 
   showCitationWindow: function ( val ) {
-	citethis.$('citethisRoot').parentNode.style.display = val ? '' : 'none';
-	if ( val ) {
-		citethis.updateCitation();
-	}
+    //citethis.$('citethisRoot').parentNode.style.display = val ? '' : 'none';
+    if ( val ) {
+      citethis.updateCitation();
+    }
   },
 
   citethisWindowIsVisible: function () {
@@ -678,7 +725,7 @@ var citethis = {
 		citethis.toggleCitationWindow ();
 	}
 	catch ( e ) {
-		citethis.alert ( e.message );
+		alert ( e.message );
 	}
 
   }
