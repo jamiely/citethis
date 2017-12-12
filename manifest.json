@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "Cite This!",
+  "description": "Cite this allows you to easily retrieve citations for the websites you visit.",
+  "version": "0.24",
+  "applications": {
+    "gecko": {
+      "strict_min_version": "54.0a1"
+    }
+  },
+
+  "sidebar_action": {
+    "default_icon": "icons/citethis.png",
+    "default_title" : "CiteThis!",
+    "default_panel": "sidebar/panel.html"
+  },
+
+  "permissions": ["tabs"],
+
+  "commands": {
+    "_execute_sidebar_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y"
+      }
+    }
+  }
+
+}
