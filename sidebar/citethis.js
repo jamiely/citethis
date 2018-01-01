@@ -1,4 +1,6 @@
-var citethis = {
+(function(root) {
+
+const citethis = {
   DEBUG: true,
 
   //
@@ -12,7 +14,7 @@ var citethis = {
   $: function (el) {
     let element = document.getElementById ( el );
     if(! element) {
-      citethis.debug('Element was null: ' + el);
+      console.log('Element was null: ' + el);
     }
     return element;
   },
@@ -34,7 +36,7 @@ var citethis = {
 			//citethis.timers.push(timer);
 		//}
 		//catch(e) {
-			//citethis.debug('Could not initiate timer because ' + e.message);
+			//console.log('Could not initiate timer because ' + e.message);
 		//}
 	//},
 	
@@ -96,22 +98,6 @@ var citethis = {
   citationStyleCustom: '',
   dateformat: "MMMM dd, yyyy",
   debug: function ( msg ){
-  	if(citethis.DEBUG) {
-	  	var n = new Date(),
-			timestamp = [
-				n.getFullYear(),
-				n.getMonth(),
-				n.getDate (),
-				n.getHours(),
-				n.getMinutes(),
-				n.getSeconds()
-				].join ("");
-
-	  	citethis.$('txtDebug').value = timestamp + ': ' + msg + '\n' + citethis.$('txtDebug').value;
-	}
-	else {
-		return;
-	}
 
   },
 
@@ -133,7 +119,7 @@ var citethis = {
       }
       let tab = ts[0];
       citethis._cachedUrl = tab.url;
-      //citethis.debug(JSON.stringify(tab));
+      //console.log(JSON.stringify(tab));
       return tab;
     });
   },
@@ -149,7 +135,7 @@ var citethis = {
   },
 
   onTabActivated: function() {
-    citethis.debug('tab was activated');
+    console.log('tab was activated');
     const now = true;
     citethis.updateCitation(now);
   },
@@ -171,16 +157,16 @@ var citethis = {
 			//this.showContextMenu(e);
 		//}, false);
 
-        citethis.debug ( '1' );
+        console.log ( '1' );
 		citethis.showCitationWindow(false);
-        citethis.debug ( '1a' );
+        console.log ( '1a' );
 		citethis.setPageVariables(true);
 		setInterval(this.checkPage, 1000);
 		var e = citethis.$('txtCitationText'), select = function(e){
 			citethis.$('txtCitationText').select();
 		};
 
-	    citethis.debug (2);
+	    console.log (2);
 		citethis.$('txtCitationText').addEventListener("focus", select, false);
 		citethis.$('txtCitationText').addEventListener("click", select, false);
 
@@ -189,7 +175,7 @@ var citethis = {
 			citethis.$(fields[i]).addEventListener('blur', citethis.generateCitation, false);
 		}
 
-		citethis.debug(3);
+		console.log(3);
 
 		// setup preferences
 
@@ -198,16 +184,16 @@ var citethis = {
             //getBranch("extensions.citethis@angelforge.org.");
 		//this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
 		//this.prefs.addObserver("", this, false);
-        citethis.debug(4);
+        console.log(4);
 		citethis.updateCitationStyle();
-		citethis.debug(5);
+		console.log(5);
 		citethis.updateCitation();
-		citethis.debug(6);
+		console.log(6);
 		
 		citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
 		
 		
-		if ( !citethis.DEBUG) {
+		if ( !console.log) {
 			var d1 = citethis.$('txtDebug'),
 				d2 = citethis.$('hboxDebug');
 			if(d1) d1.style.display = 'none';
@@ -216,7 +202,7 @@ var citethis = {
 		
 	}
 	catch (e) {
-		citethis.debug ( 'Load issue: ' + e.message );
+		console.log ( 'Load issue: ' + e.message );
 	}
   },
 
@@ -229,7 +215,7 @@ var citethis = {
       if (!citethis.citethisWindowIsVisible())
         return;
 
-      citethis.debug('updateCitation: a');
+      console.log('updateCitation: a');
       immediateUpdate = immediateUpdate === true;
       var f = citethis.setPageVariables;
       if (immediateUpdate) {
@@ -240,24 +226,24 @@ var citethis = {
       }
     }
     catch(e) {
-      citethis.debug(e.message);
+      console.log(e.message);
     }
   },
 
   updateCitationStyle: function () {
   	try {
 		citethis.dateformat = String( citethis.prefs.getCharPref("dateformat") );
-        citethis.debug("Got Date Format");
+        console.log("Got Date Format");
 
 		citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
-		citethis.debug("Got citation style: " + citethis.citationStyle);
+		console.log("Got citation style: " + citethis.citationStyle);
 	    citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
-		citethis.debug("Got Custom Style");
+		console.log("Got Custom Style");
 	    citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
 
 	}
 	catch (e) {
-		citethis.debug(e.message);
+		console.log(e.message);
 	}
   },
 
@@ -317,29 +303,29 @@ var citethis = {
 
   setPageVariables: function( setLastAccessed ) {
     citethis.getActiveTab().then((tab) => {
-      citethis._setPageVariables(tab.url, tab.title, setLastAccessed);
+      citethis._setPageVariables(tab, tab.url, tab.title, setLastAccessed);
     });
   },
 
-  _setPageVariables: function ( url, title, setLastAccessed ) {
+  _setPageVariables: function ( tab, url, title, setLastAccessed ) {
     citethis.doc = document;
     citethis._isFirstRun = true;
     //setLastAccessed = setLastAccessed === true;
     setLastAccessed = true;
-    citethis.$('txtAuthor').value = citethis.getAuthor ();
+    citethis.$('txtAuthor').value = citethis.getAuthor (tab);
     citethis.$('txtYearPublished').value = citethis.getYearPublished ();
-    citethis.$('txtTitle').value = citethis.getTitle (title);
-    citethis.debug('got title');
-    citethis.$('txtURL').value = citethis.getURL();
-    citethis.debug('got url');
+    citethis.$('txtTitle').value = citethis.prepareTitle (tab);
+    console.log('got title');
+    citethis.$('txtURL').value = tab.url;
+    console.log('got url');
     if ( setLastAccessed ) {
       citethis.$('txtLastAccessed').value = citethis.getLastAccessed ();
       citethis.$('txtLastUpdated').value = citethis.getLastUpdated ();
     }
 
-    citethis.debug('Generating citation...');
+    console.log('Generating citation...');
     citethis.generateCitation ();
-    citethis.debug('Generated citation...');
+    console.log('Generated citation...');
 
   },
 
@@ -356,7 +342,7 @@ var citethis = {
 
   getCitation: function ( template ) {
     citethis.citationStyle = 'apa';
-    citethis.debug('Get citation using style: ' + citethis.citationStyle);
+    console.log('Get citation using style: ' + citethis.citationStyle);
     var selectedTemplate = citethis.citationStyles[citethis.citationStyle];
     template = template || selectedTemplate || citethis.citationStyles.apa;
 
@@ -379,29 +365,29 @@ var citethis = {
     for ( var key in p ){
       template = template.replace ( "$" + key, p[key] );
     }
-    citethis.debug('Returning template');
+    console.log('Returning template');
     return template;
   },
 
   _isFirstRun: true,
   getMetaTag: function ( metaTagName ) {
   	metaTagName = metaTagName.toLowerCase();
-	citethis.debug ( "metaTag: " + metaTagName );
+	console.log ( "metaTag: " + metaTagName );
 	try {
 		if ( citethis._isFirstRun ) {
 			citethis._isFirstRun = false;
 
 			var root =  citethis.doc.documentElement;
-			citethis.debug ( "root: " + root );
+			console.log ( "root: " + root );
 			if (root) {
-				citethis.debug("root tag : " + root.tagName);
+				console.log("root tag : " + root.tagName);
 			}
 		}
 		var head = citethis.doc.getElementsByTagName ("head");
-		citethis.debug ( "head length: " + head.length );
+		console.log ( "head length: " + head.length );
 		var meta = citethis.doc.getElementsByTagName("meta");
-		citethis.debug("meta.length = " + meta.length);
-		citethis.debug("parts.length = " + citethis.doc.getElementsByTagName("script").length);
+		console.log("meta.length = " + meta.length);
+		console.log("parts.length = " + citethis.doc.getElementsByTagName("script").length);
 		for (var i = 0; i < meta.length; i++) {
 			if (meta[i].name && meta[i].name.toLowerCase() == metaTagName) {
 				return meta[i];
@@ -418,84 +404,6 @@ var citethis = {
   	return str.replace (/\s+/, ' ');
   },
 
-  siteSpecific: {
-    Wikipedia: {
-		// @todo cache these funcs. change on page load
-		is: function () {
-
-			return /wikipedia\.org\//i.test(citethis.getURL());
-		},
-		getAuthor: function () {
-			return '';
-		},
-		getTitle: function (title) {
-			return title.replace(/ - Wikipedia.+/, '');
-		}
-	},
-	CNN: {
-		is: function() {
-			return /cnn\.com\//i.test(citethis.getURL());
-		},
-		getAuthor: function() {
-			var els = citethis.doc.getElementsByClassName('cnn_strycbftrtxt');
-			if (els && els.length > 0 ) {
-				var e = els[0],
-				 	matches = /^cnn's(.+) contributed.+/ig.exec(e.innerHTML);
-				if (matches && matches.length > 1 ) {
-					return matches[1];
-				}
-			}
-			// try getting meta author
-			var metaAuthor = citethis.getMetaTag ( "author" );
-			if ( metaAuthor ) {
-				var c = metaAuthor.content,
-					parts = c.split(',');
-				parts = parts.slice(0, parts.length-1);
-				return parts.join (',');
-			}
-			return null;
-		},
-		getTitle: function(title) {
-			return title.replace(/ - CNN.+/, '');
-		}
-	},
-	Huffington: {
-		is: function () {
-			return /huffingtonpost\.com/i.test ( citethis.getURL() );
-		},
-		getAuthor: function () {
-			return citethis.getFirstElementByClass ('wire_author');
-		}
-	},
-	ABCNews: {
-		is: function () {
-			return /abcnews\.go\.com/i.test (citethis.getURL());
-		},
-		getAuthor: function () {
-			var a = citethis.getFirstElementByClass ('story_byline', 'textContent');
-			
-			return a ? a.replace(/ABC.+/i, ''): null;
-		}
-	},
-	FoxNews: {
-		is: function () { return /fox\w+\.com/i.test(citethis.getURL()); },
-		getTitle: function (title) {
-			return title.
-				replace(/.*FOXNews.com\s+-\s+/i, '').
-				replace(/ - FOX.+/i, '');
-		}
-	}
-	// ,
-	// 	Reuters: {
-	// 		is: function () { return /reuters\.com/i.test(citethis.getURL()); },
-	// 		getTitle: function (title) {
-	// 			return title.replace(/ \| Reuters.*/i, '');
-	// 		}
-	// 	}
-  },
-
-  
-
   getFirstElementByClass: function (className, prop) {
 		prop = prop || 'innerHTML';
 		var els = citethis.doc.getElementsByClassName(className); 
@@ -505,20 +413,25 @@ var citethis = {
 		return null;
   },
 
-  getSiteSpecific: function(funcName, args) {
+  getSiteSpecificByTab: function(tab, funcName) {
+    let handlers = SiteSpecificHandlers
     // run site specific functions
-    for (var site in citethis.siteSpecific) {
-      var funcs = citethis.siteSpecific [ site ]; // set of functions
-      if ( funcs && funcs.is && funcs.is () ) { // if func is exists
-        if (funcs[funcName]) { // if func exists
-          citethis.debug('Calling site specific func with args: ' + args);
-          return funcs[funcName].apply(this, args);
+    for(let i = 0; i < handlers.length; i++){
+      var handler = handlers[i]; // set of functions
+      if ( handler && handler.is && handler.is (tab) ) { // if func is exists
+        let func = handler[funcName];
+        if (func) { // if func exists
+          console.log({
+            what: 'Calling site specific func',
+            funcName: funcName,
+            tab: tab
+          });
+          return func.call(this, tab);
         }
       }
     }
     return null;
   },
-
   /**
    * Will remove whitespace from either side of the string.
    * will also remove non-word characters at end of string.
@@ -530,6 +443,7 @@ var citethis = {
   formatAuthor: function ( author ) {
     try {
 		if (author) {			
+      console.log('formatAuthor');
 			author = citethis._reduceWhitespace (author);
 			
 			
@@ -558,9 +472,9 @@ var citethis = {
 	
 	var el = citethis.getElement('byline'),
 		rtn = null;
-	citethis.debug ('getAuthorHasBylineElement started ' + el);
+	console.log ('getAuthorHasBylineElement started ' + el);
 	if (el) {
-		citethis.debug ('getAuthorHasBylineElement: has el' + el);
+		console.log ('getAuthorHasBylineElement: has el' + el);
 		var val = el.value || el.innerHTML;
 		if (val && val != '') {
 			rtn = val;
@@ -573,18 +487,18 @@ var citethis = {
 	return citethis.doc.getElementById ( id );
   },
 
-  getAuthor: function () {
+  getAuthor: function (tab) {
   	var author = "Last, First",
 		metaByl = citethis.getMetaTag ( "byl" ),
 		metaAuthor = citethis.getMetaTag ( "author" ),
-		siteSpec =  citethis.getSiteSpecific('getAuthor');
+		siteSpec =  citethis.getSiteSpecificByTab(tab, 'getAuthor');
 
-    citethis.debug("author: " + siteSpec);
+    console.log("author: " + siteSpec);
     if ( siteSpec || siteSpec == '' ) return citethis.formatAuthor (siteSpec);
 
 	try {
-		citethis.debug ( "metaByl: " + metaByl );
-		citethis.debug ( "metaAuthor: " + metaAuthor );
+		console.log ( "metaByl: " + metaByl );
+		console.log ( "metaAuthor: " + metaAuthor );
 		var first = citethis.getAuthorHasBylineElement();
 		
 		if ( first ) {
@@ -601,7 +515,7 @@ var citethis = {
 			// see if there are any elements marked byline
 			var elByl = citethis.doc.getElementsByClassName ( "byline" );
 			
-			citethis.debug('byline elements:' + elByl.length);
+			console.log('byline elements:' + elByl.length);
 
 			if ( elByl && elByl.length > 0 ) {
 				// strip and stripTags functions from prototypejs
@@ -620,7 +534,7 @@ var citethis = {
 				}
 				else {
 					var parts = citethis.doc.body ? citethis.doc.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
-					citethis.debug ( "parts: " + parts );
+					console.log ( "parts: " + parts );
 					if ( parts && parts[0] ) {
 						author = citethis._reduceWhitespace ( parts[0] );
 					}
@@ -662,7 +576,7 @@ var citethis = {
   getHost: function() {
     var parts = citethis.getURL().split('/');
     if(parts.length <= 2) {
-      citethis.debug('No host available');
+      console.log('No host available');
       return '';
     }
     return parts[2]; // returns part before com, net'
@@ -672,52 +586,48 @@ var citethis = {
     var parts = citethis.getHost().split('.');
     if(parts.length >= 2) return parts[parts.length-2];
 
-    citethis.debug('no domain available');
+    console.log('no domain available');
     return '';
   },
 
   formatTitle: function ( title ) {
-    citethis.debug('formatting ' + title);
+    console.log('formatting ' + title);
     if (!title) return null;
 
-    citethis.debug('domain?');
+    console.log('domain?');
     var h = citethis.getDomain ();
-    citethis.debug('domain: ' + h);
+    console.log('domain: ' + h);
 
     try{
       // if host appears in title, probably should be removed.
       title = title.replace (new RegExp('\\b' + h + '\\b', 'ig'), '');
-      citethis.debug('domain: ' + h);
+      console.log('domain: ' + h);
       title = title.replace (/^\W+/, ''); // replace non-word chars at beginning
       title = title.replace(/\W+$/, ''); //replace at end 
     }
-    catch(e){citethis.debug('error in formatTitle:'+e);}
+    catch(e){console.log('error in formatTitle:'+e);}
     return title;
 
   },
 
-  getTitle: function (title) {
-    citethis.debug('getTitle: getting');
-    var siteSpec =  citethis.getSiteSpecific('getTitle', [title]);
-    if ( siteSpec ) {
+  prepareTitle: function (tab) {
+    let title = tab.title;
 
-      citethis.debug('getTitle: got site specific title');
+    console.log('prepareTitle: getting');
+    var siteSpec =  citethis.getSiteSpecificByTab(tab, 'getTitle');
+    if ( siteSpec ) {
+      console.log('prepareTitle: got site specific title');
       return citethis.formatTitle(siteSpec);
     }
-    if ( title == "Mozilla Firefox" )
+
+    if ( title == "Mozilla Firefox" ) {
       return "Website Title";
+    }
     // some people have reported the browser is attached to title.
-    // i see no such thing! putting this here just in case.
-    citethis.debug('getTitle: formatting title: ' + title);
+    console.log('prepareTitle: formatting title: ' + title);
     let formatted = citethis.formatTitle(title.replace(/ - Mozilla Firefox$/i, ''));
 
-    citethis.debug('getTitle: formatted');
     return formatted;
-  },
-
-  onToolbarButtonCommand: function(e) {
-    // just reuse the function above.  you can change this, obviously!
-    citethis.onMenuItemCommand(e);
   },
 
   showCitationWindow: function ( val ) {
@@ -747,7 +657,83 @@ var citethis = {
 
 };
 
+const Wikipedia = {
+  is: function(tab) {
+    return /wikipedia\.org\//i.test(tab.url);
+  },
+  getAuthor: () => {
+    return '';
+  },
+  getTitle: (tab) => {
+    tab.title.replace(/ - Wikipedia.+/, '');
+  }
+};
 
+const CNN = {
+  is: function(tab) {
+    return /cnn\.com\//i.test(tab.url);
+  },
+  getAuthor: function(tab) {
+    var els = document.getElementsByClassName('cnn_strycbftrtxt');
+    if (els && els.length > 0 ) {
+      var e = els[0],
+        matches = /^cnn's(.+) contributed.+/ig.exec(e.innerHTML);
+      if (matches && matches.length > 1 ) {
+        return matches[1];
+      }
+    }
+    // try getting metadata__byline__author
+    els = citethis.doc.getElementsByClassName('metadata__byline__author');
+    console.log('CNN metadata');
+    if(els && els.length > 0) {
+      var content = els[0].innerHtml;
+      return content;
+    }
+    // try getting meta author
+    var metaAuthor = citethis.getMetaTag ( "author" );
+    if ( metaAuthor ) {
+      var c = metaAuthor.content,
+        parts = c.split(',');
+      parts = parts.slice(0, parts.length-1);
+      return parts.join (',');
+    }
+    return null;
+  },
+  getTitle: function(tab) {
+    return tab.title.replace(/ - CNN.+/, '');
+  }
+};
+
+const Huffington = {
+  is: function (tab) {
+    return /huffingtonpost\.com/i.test ( tab.url );
+  },
+  getAuthor: function (tab) {
+    return citethis.getFirstElementByClass ('wire_author');
+  }
+};
+
+const ABCNews = {
+  is: function (tab) {
+    return /abcnews\.go\.com/i.test (tab.url);
+  },
+  getAuthor: function (tab) {
+    var a = citethis.getFirstElementByClass ('story_byline', 'textContent');
+
+    return a ? a.replace(/ABC.+/i, ''): null;
+  }
+};
+
+const FoxNews = {
+  is: function (tab) { return /fox\w+\.com/i.test(tab.url); },
+  getTitle: function (tab) {
+    return tab.title.
+      replace(/.*FOXNews.com\s+-\s+/i, '').
+      replace(/ - FOX.+/i, '');
+  }
+};
+
+const SiteSpecificHandlers = [Wikipedia, CNN, Huffington, ABCNews, FoxNews];
 
 // the following functions taken from datejs library, with MIT license.
 citethis.Date = {}; 
@@ -939,6 +925,7 @@ citethis.Date.format = function (dt, format) {
     }) : this._toString();
 };
 
-window.addEventListener("load", function(e) { citethis.onLoad(e); }, false);
-window.addEventListener("unload", function(e) { citethis.shutdown(e); }, false);
+root.addEventListener("load", function(e) { citethis.onLoad(e); }, false);
+root.addEventListener("unload", function(e) { citethis.shutdown(e); }, false);
 
+})(window);
