@@ -32,7 +32,7 @@ const citethis = {
 
   // retrieve a preference by name
   getPref: function(name) {
-      return this.prefs.getCharPref(name);
+    return this.prefs.getCharPref(name);
   },
 
   // only works for XUL elements. use citethis.getElement to get page elements.
@@ -44,45 +44,45 @@ const citethis = {
     return element;
   },
 
-	timers: [],
+  timers: [],
 
-	//initTimer: function (fun, ms, type) {
-		//try {
-			 //// Now it is time to create the timer...  
-			 //var timer 
-				 //= Components.classes["@mozilla.org/timer;1"]
-						 //.createInstance(Components.interfaces.nsITimer);
+  //initTimer: function (fun, ms, type) {
+  //try {
+  //// Now it is time to create the timer...  
+  //var timer 
+  //= Components.classes["@mozilla.org/timer;1"]
+  //.createInstance(Components.interfaces.nsITimer);
 
-			 //timer.initWithCallback(
-				 //{ notify: fun },
-				 //ms,
-				 //type);
-		
-			//citethis.timers.push(timer);
-		//}
-		//catch(e) {
-			//console.log('Could not initiate timer because ' + e.message);
-		//}
-	//},
-	
+  //timer.initWithCallback(
+  //{ notify: fun },
+  //ms,
+  //type);
+
+  //citethis.timers.push(timer);
+  //}
+  //catch(e) {
+  //console.log('Could not initiate timer because ' + e.message);
+  //}
+  //},
+
   capitalize: function (str) {
     return str.toLowerCase().replace(/\b\w/g, 
-		function(capture){
-			return capture.toUpperCase();
-		}
-	);	
+      function(capture){
+        return capture.toUpperCase();
+      }
+    );	
   },
 
   citationStyles: {
-  	/**
-  	 * These are functions which return a citation template. The variables
-  	 * are prefixed by dollar signs.
-  	 * @param {Object} data
-  	 */
-  	apa: function(data) {
+    /**
+     * These are functions which return a citation template. The variables
+     * are prefixed by dollar signs.
+     * @param {Object} data
+     */
+    apa: function(data) {
       // apa specifies using not disclosed when the year is 
       // unknown http://owl.english.purdue.edu/owl/resource/560/10/
-          var year = !data.year || data.year == '' ? "n.d." : "$year";
+      var year = !data.year || data.year == '' ? "n.d." : "$year";
 
       // date should be spelled out!
       if ( data.author ) {
@@ -127,12 +127,12 @@ const citethis = {
   },
 
   clearCitationList: function() {
-	citethis.$('citationList').value = '';
+    citethis.$('citationList').value = '';
   },
 
   addCitationToList: function(newCitation) {
-	newCitation = newCitation || citethis.getCitationText ();
-	citethis.$('citationList').value += newCitation + '\n';
+    newCitation = newCitation || citethis.getCitationText ();
+    citethis.$('citationList').value += newCitation + '\n';
   },
 
   getActiveTab () {
@@ -172,65 +172,65 @@ const citethis = {
 
 
   onLoad: function() {
-  	try {
+    try {
 
-    browser.runtime.onMessage.addListener(onContentScriptMessage);
-    browser.tabs.onActivated.addListener(citethis.onTabActivated);
-    browser.tabs.onUpdated.addListener(citethis.onTabActivated);
-		// initialization code
+      browser.runtime.onMessage.addListener(onContentScriptMessage);
+      browser.tabs.onActivated.addListener(citethis.onTabActivated);
+      browser.tabs.onUpdated.addListener(citethis.onTabActivated);
+      // initialization code
 
-		this.initialized = true;
-		//document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", function(e){
-			//this.showContextMenu(e);
-		//}, false);
+      this.initialized = true;
+      //document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", function(e){
+      //this.showContextMenu(e);
+      //}, false);
 
-        //console.log ( '1' );
-		citethis.showCitationWindow(false);
-        //console.log ( '1a' );
-		citethis.setPageVariables(true);
-		setInterval(this.checkPage, 1000);
-		var e = citethis.$('txtCitationText'), select = function(e){
-			citethis.$('txtCitationText').select();
-		};
+      //console.log ( '1' );
+      citethis.showCitationWindow(false);
+      //console.log ( '1a' );
+      citethis.setPageVariables(true);
+      setInterval(this.checkPage, 1000);
+      var e = citethis.$('txtCitationText'), select = function(e){
+        citethis.$('txtCitationText').select();
+      };
 
-			//console.log (2);
-		citethis.$('txtCitationText').addEventListener("focus", select, false);
-		citethis.$('txtCitationText').addEventListener("click", select, false);
+      //console.log (2);
+      citethis.$('txtCitationText').addEventListener("focus", select, false);
+      citethis.$('txtCitationText').addEventListener("click", select, false);
 
-		var fields = 'txtAuthor txtYearPublished txtTitle txtURL txtLastAccessed txtLastUpdated'.split(' ');
-		for (var i = 0; i < fields.length; i++) {
-			citethis.$(fields[i]).addEventListener('blur', citethis.generateCitation, false);
-		}
+      var fields = 'txtAuthor txtYearPublished txtTitle txtURL txtLastAccessed txtLastUpdated'.split(' ');
+      for (var i = 0; i < fields.length; i++) {
+        citethis.$(fields[i]).addEventListener('blur', citethis.generateCitation, false);
+      }
 
-		//console.log(3);
+      //console.log(3);
 
-		// setup preferences
+      // setup preferences
 
-		//this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
-            //getService(Components.interfaces.nsIPrefService).
-            //getBranch("extensions.citethis@angelforge.org.");
-		//this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
-		//this.prefs.addObserver("", this, false);
-        //console.log(4);
-		citethis.updateCitationStyle();
-		//console.log(5);
-		citethis.updateCitation();
-		//console.log(6);
-		
-		citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
-		
-		
-		if ( !console.log) {
-			var d1 = citethis.$('txtDebug'),
-				d2 = citethis.$('hboxDebug');
-			if(d1) d1.style.display = 'none';
-			if(d2) d2.style.display = 'none';
-		}
-		
-	}
-	catch (e) {
-		console.log ( 'Load issue: ' + e.message );
-	}
+      //this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
+      //getService(Components.interfaces.nsIPrefService).
+      //getBranch("extensions.citethis@angelforge.org.");
+      //this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
+      //this.prefs.addObserver("", this, false);
+      //console.log(4);
+      citethis.updateCitationStyle();
+      //console.log(5);
+      citethis.updateCitation();
+      //console.log(6);
+
+      citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
+
+
+      if ( !console.log) {
+        var d1 = citethis.$('txtDebug'),
+          d2 = citethis.$('hboxDebug');
+        if(d1) d1.style.display = 'none';
+        if(d2) d2.style.display = 'none';
+      }
+
+    }
+    catch (e) {
+      console.log ( 'Load issue: ' + e.message );
+    }
   },
 
   /**
@@ -258,20 +258,20 @@ const citethis = {
   },
 
   updateCitationStyle: function () {
-  	try {
-		citethis.dateformat = String( citethis.prefs.getCharPref("dateformat") );
-        //console.log("Got Date Format");
+    try {
+      citethis.dateformat = String( citethis.prefs.getCharPref("dateformat") );
+      //console.log("Got Date Format");
 
-		citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
-		//console.log("Got citation style: " + citethis.citationStyle);
-	    citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
-		//console.log("Got Custom Style");
-	    citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
+      citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
+      //console.log("Got citation style: " + citethis.citationStyle);
+      citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
+      //console.log("Got Custom Style");
+      citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
 
-	}
-	catch (e) {
-		console.log(e.message);
-	}
+    }
+    catch (e) {
+      console.log(e.message);
+    }
   },
 
   /**
@@ -281,18 +281,18 @@ const citethis = {
    * @param {Object} data
    */
   observe: function(subject, topic, data)
-   {
-     if (topic != "nsPref:changed")
-     {
-       return;
-     }
+  {
+    if (topic != "nsPref:changed")
+    {
+      return;
+    }
 
 
-	 // update citation
-     citethis.updateCitationStyle ();
-     // update the citation
-     citethis.updateCitation ();
-   },
+    // update citation
+    citethis.updateCitationStyle ();
+    // update the citation
+    citethis.updateCitation ();
+  },
 
 
   shutdown: function()
@@ -302,15 +302,15 @@ const citethis = {
 
 
   checkPage: function () {
-  	try {
-		if (citethis.getURL() != citethis.currentURL) {
-			citethis.currentURL = citethis.getURL();
-			citethis.updateCitation();
-		}
-	}
-	catch ( e ) {
-		alert ( 'Problem checking page: ' + e.message );
-	}
+    try {
+      if (citethis.getURL() != citethis.currentURL) {
+        citethis.currentURL = citethis.getURL();
+        citethis.updateCitation();
+      }
+    }
+    catch ( e ) {
+      alert ( 'Problem checking page: ' + e.message );
+    }
   },
 
   /**
@@ -323,7 +323,7 @@ const citethis = {
   },
 
   getCitationText: function () {
-	return citethis.$('txtCitationText').value;
+    return citethis.$('txtCitationText').value;
   },
 
   _cachedUrl: '',
@@ -368,8 +368,8 @@ const citethis = {
   },
   onMenuItemCommand: function(e) {
     //var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-                                  //.getService(Components.interfaces.nsIPromptService);
-	//citethis.openCitationDialog ();
+    //.getService(Components.interfaces.nsIPromptService);
+    //citethis.openCitationDialog ();
   },
 
   getCitation: function ( template ) {
@@ -403,46 +403,46 @@ const citethis = {
 
   _isFirstRun: true,
   getMetaTag: function ( metaTagName ) {
-  	metaTagName = metaTagName.toLowerCase();
-	//console.log ( "metaTag: " + metaTagName );
-	try {
-		if ( citethis._isFirstRun ) {
-			citethis._isFirstRun = false;
+    metaTagName = metaTagName.toLowerCase();
+    //console.log ( "metaTag: " + metaTagName );
+    try {
+      if ( citethis._isFirstRun ) {
+        citethis._isFirstRun = false;
 
-			var root =  citethis.doc.documentElement;
-			//console.log ( "root: " + root );
-			if (root) {
-				//console.log("root tag : " + root.tagName);
-			}
-		}
-		var head = citethis.doc.getElementsByTagName ("head");
-		//console.log ( "head length: " + head.length );
-		var meta = citethis.doc.getElementsByTagName("meta");
-		//console.log("meta.length = " + meta.length);
-		//console.log("parts.length = " + citethis.doc.getElementsByTagName("script").length);
-		for (var i = 0; i < meta.length; i++) {
-			if (meta[i].name && meta[i].name.toLowerCase() == metaTagName) {
-				return meta[i];
-			}
-		}
-	}
-	catch ( e ) {
-		alert ( e.message );
-	}
-	return null;
+        var root =  citethis.doc.documentElement;
+        //console.log ( "root: " + root );
+        if (root) {
+          //console.log("root tag : " + root.tagName);
+        }
+      }
+      var head = citethis.doc.getElementsByTagName ("head");
+      //console.log ( "head length: " + head.length );
+      var meta = citethis.doc.getElementsByTagName("meta");
+      //console.log("meta.length = " + meta.length);
+      //console.log("parts.length = " + citethis.doc.getElementsByTagName("script").length);
+      for (var i = 0; i < meta.length; i++) {
+        if (meta[i].name && meta[i].name.toLowerCase() == metaTagName) {
+          return meta[i];
+        }
+      }
+    }
+    catch ( e ) {
+      alert ( e.message );
+    }
+    return null;
   },
 
   _reduceWhitespace: function ( str ) {
-  	return str.replace (/\s+/, ' ');
+    return str.replace (/\s+/, ' ');
   },
 
   getFirstElementByClass: function (className, prop) {
-		prop = prop || 'innerHTML';
-		var els = citethis.doc.getElementsByClassName(className); 
-		if ( els && els.length > 0 ) {
-			return els[0][prop];
-		}
-		return null;
+    prop = prop || 'innerHTML';
+    var els = citethis.doc.getElementsByClassName(className); 
+    if ( els && els.length > 0 ) {
+      return els[0][prop];
+    }
+    return null;
   },
 
   getSiteSpecificByTab: function(tab, funcName) {
@@ -469,121 +469,121 @@ const citethis = {
    * will also remove non-word characters at end of string.
    */
   trim: function(str) {
-	return str.replace(/^\s+/, '').replace(/[\s\W]+$/, ''); //trim
+    return str.replace(/^\s+/, '').replace(/[\s\W]+$/, ''); //trim
   },
 
   formatAuthor: function ( author ) {
     try {
-		if (author) {			
-			author = citethis._reduceWhitespace (author);
-			
-			
-			author = author.replace(/^\s*by */i, ''); // remove "by"
-			
-			// deal with associated press? 
-			author = author.replace(/,\s*Associated Press[.\s\S]+$/ig, '');
-			author = author.replace(/,\s*AP[.\s\S]+$/g, '');
-			
-			author = citethis.trim (author);
-			author = citethis.capitalize (author);
-			return author;
-		}
-		return '';
+      if (author) {			
+        author = citethis._reduceWhitespace (author);
+
+
+        author = author.replace(/^\s*by */i, ''); // remove "by"
+
+        // deal with associated press? 
+        author = author.replace(/,\s*Associated Press[.\s\S]+$/ig, '');
+        author = author.replace(/,\s*AP[.\s\S]+$/g, '');
+
+        author = citethis.trim (author);
+        author = citethis.capitalize (author);
+        return author;
+      }
+      return '';
     }
-	catch (e){
-		alert ( 'formatAuthor exception: ' + e );
-		return '';
-	}
+    catch (e){
+      alert ( 'formatAuthor exception: ' + e );
+      return '';
+    }
   },
 
   /**
    * Check to see if there is an element with ID "byline"
    */
   getAuthorHasBylineElement: function () {
-	
-	var el = citethis.getElement('byline'),
-		rtn = null;
-	//console.log ('getAuthorHasBylineElement started ' + el);
-	if (el) {
-		//console.log ('getAuthorHasBylineElement: has el' + el);
-		var val = el.value || el.innerHTML;
-		if (val && val != '') {
-			rtn = val;
-		}
-	}
-	return rtn;
+
+    var el = citethis.getElement('byline'),
+      rtn = null;
+    //console.log ('getAuthorHasBylineElement started ' + el);
+    if (el) {
+      //console.log ('getAuthorHasBylineElement: has el' + el);
+      var val = el.value || el.innerHTML;
+      if (val && val != '') {
+        rtn = val;
+      }
+    }
+    return rtn;
   },
 
   getElement: function ( id ) {
-	return citethis.doc.getElementById ( id );
+    return citethis.doc.getElementById ( id );
   },
 
   getAuthor: function (tab) {
-  	var author = "Last, First",
-		metaByl = citethis.getMetaTag ( "byl" ),
-		metaAuthor = citethis.getMetaTag ( "author" ),
-		siteSpec =  citethis.getSiteSpecificByTab(tab, 'getAuthor');
+    var author = "Last, First",
+      metaByl = citethis.getMetaTag ( "byl" ),
+      metaAuthor = citethis.getMetaTag ( "author" ),
+      siteSpec =  citethis.getSiteSpecificByTab(tab, 'getAuthor');
 
     //console.log("author: " + siteSpec);
     if ( siteSpec || siteSpec == '' ) return citethis.formatAuthor (siteSpec);
 
-	try {
-		//console.log ( "metaByl: " + metaByl );
-		//console.log ( "metaAuthor: " + metaAuthor );
-		var first = citethis.getAuthorHasBylineElement();
-		
-		if ( first ) {
-			author = first;
-		}
-		else if ( metaAuthor && metaAuthor.content != '') {
-			author = metaAuthor.content;
-		}
-		else if ( metaByl && metaByl.content != '' ) {
-			// check for a byline meta element
-			author = metaByl.content;
-		}
-		else {
-			// see if there are any elements marked byline
-			var elByl = citethis.doc.getElementsByClassName ( "byline" );
-			
-			//console.log('byline elements:' + elByl.length);
+    try {
+      //console.log ( "metaByl: " + metaByl );
+      //console.log ( "metaAuthor: " + metaAuthor );
+      var first = citethis.getAuthorHasBylineElement();
 
-			if ( elByl && elByl.length > 0 ) {
-				// strip and stripTags functions from prototypejs
-				author = elByl[0].
-					textContent.
-					replace(/^\s+/, '').replace(/\s+$/, '');
+      if ( first ) {
+        author = first;
+      }
+      else if ( metaAuthor && metaAuthor.content != '') {
+        author = metaAuthor.content;
+      }
+      else if ( metaByl && metaByl.content != '' ) {
+        // check for a byline meta element
+        author = metaByl.content;
+      }
+      else {
+        // see if there are any elements marked byline
+        var elByl = citethis.doc.getElementsByClassName ( "byline" );
 
-				author = citethis._reduceWhitespace ( author );
-;
-			}
-			else {
-				// check for author elements
-				var elAuthorText = citethis.getFirstElementByClass('author', 'textContent');
-				if(elAuthorText && elAuthorText != '') {
-					author = elAuthorText;
-				}
-				else {
-					var parts = citethis.doc.body ? citethis.doc.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
-					//console.log ( "parts: " + parts );
-					if ( parts && parts[0] ) {
-						author = citethis._reduceWhitespace ( parts[0] );
-					}
-					else {
-						// other fail-safes
-					}
-				}
-			}
-		}
-	}
-	catch(e){
-		alert ( e.message );
-	}
-	return citethis.formatAuthor (author);
+        //console.log('byline elements:' + elByl.length);
+
+        if ( elByl && elByl.length > 0 ) {
+          // strip and stripTags functions from prototypejs
+          author = elByl[0].
+            textContent.
+            replace(/^\s+/, '').replace(/\s+$/, '');
+
+          author = citethis._reduceWhitespace ( author );
+          ;
+        }
+        else {
+          // check for author elements
+          var elAuthorText = citethis.getFirstElementByClass('author', 'textContent');
+          if(elAuthorText && elAuthorText != '') {
+            author = elAuthorText;
+          }
+          else {
+            var parts = citethis.doc.body ? citethis.doc.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
+            //console.log ( "parts: " + parts );
+            if ( parts && parts[0] ) {
+              author = citethis._reduceWhitespace ( parts[0] );
+            }
+            else {
+              // other fail-safes
+            }
+          }
+        }
+      }
+    }
+    catch(e){
+      alert ( e.message );
+    }
+    return citethis.formatAuthor (author);
   },
 
   getYearPublished: function () {
-	return new Date().getFullYear();
+    return new Date().getFullYear();
   },
 
   getURL: function () {
@@ -591,17 +591,17 @@ const citethis = {
   },
 
   getLastUpdated: function () {
-  	return citethis.getLastAccessed();
+    return citethis.getLastAccessed();
   },
 
   getLastAccessed: function () {
 
-	var m_names = ["January", "February", "March",
-		"April", "May", "June", "July", "August", "September",
-		"October", "November", "December"];
+    var m_names = ["January", "February", "March",
+      "April", "May", "June", "July", "August", "September",
+      "October", "November", "December"];
 
-	var d = new Date();
-	return citethis.Date.format(d, citethis.dateformat);
+    var d = new Date();
+    return citethis.Date.format(d, citethis.dateformat);
   },
 
   getHost: function() {
@@ -669,20 +669,20 @@ const citethis = {
   },
 
   citethisWindowIsVisible: function () {
-	return citethis.$('citethisRoot').parentNode.style.display == '';
+    return citethis.$('citethisRoot').parentNode.style.display == '';
   },
 
   toggleCitationWindow: function () {
-	citethis.showCitationWindow ( ! citethis.citethisWindowIsVisible () );
+    citethis.showCitationWindow ( ! citethis.citethisWindowIsVisible () );
   },
 
   openCitationDialog : function () {
-	try {
-		citethis.toggleCitationWindow ();
-	}
-	catch ( e ) {
-		alert ( e.message );
-	}
+    try {
+      citethis.toggleCitationWindow ();
+    }
+    catch ( e ) {
+      alert ( e.message );
+    }
 
   }
 
