@@ -1,6 +1,8 @@
 var citethis = {
   DEBUG: true,
 
+  //
+
   // retrieve a preference by name
   getPref: function(name) {
       return this.prefs.getCharPref(name);
@@ -146,9 +148,22 @@ var citethis = {
     });
   },
 
+  onTabActivated: function() {
+    citethis.debug('tab was activated');
+    const now = true;
+    citethis.updateCitation(now);
+  },
+
+  onTabUpdated: function() {
+    citethis.onTabActivated();
+  },
+
 
   onLoad: function() {
   	try {
+
+    browser.tabs.onActivated.addListener(citethis.onTabActivated);
+    browser.tabs.onUpdated.addListener(citethis.onTabActivated);
 		// initialization code
 
 		this.initialized = true;
