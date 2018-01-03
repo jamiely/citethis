@@ -18,11 +18,17 @@ function executeContentScript(tab) {
 }
 
 function onContentScriptMessage(message, context) {
-  if(message._context && message._context == 'log') {
+  if(! message._context) return;
+
+  if(message._context == 'log') {
     console.log(message.message);
-  } else {
-    console.log(message._context);
+    return;
   }
+
+  if(message._context == 'fields') {
+    citethis._setPageVariablesWithOpts(message.fields);
+  }
+  console.log(message._context);
 }
 
 const citethis = {
@@ -64,14 +70,6 @@ const citethis = {
   //console.log('Could not initiate timer because ' + e.message);
   //}
   //},
-
-  capitalize: function (str) {
-    return str.toLowerCase().replace(/\b\w/g, 
-      function(capture){
-        return capture.toUpperCase();
-      }
-    );	
-  },
 
   citationStyles: {
     /**
@@ -339,26 +337,33 @@ const citethis = {
     });
   },
 
+  _setPageVariablesWithOpts: function(opts) {
+    $ = citethis.$;
+    $('txtAuthor').value = opts.author || $('txtAuthor').value;
+    $('txtYearPublished').value = opts.year || $('txtYearPublished').value;
+    $('txtTitle').value = opts.title || $('txtTitle').value;
+    $('txtURL').value = opts.url || $('txtURL').value;
+    $('txtLastAccessed').value = opts.accessed || $('txtLastAccessed').value;
+    $('txtLastUpdated').value = opts.updated || $('txtLastUpdated').value;
+
+    citethis.generateCitation ();
+  },
+
   _setPageVariables: function ( tab, url, title, setLastAccessed ) {
     citethis.doc = document;
     citethis._isFirstRun = true;
     //setLastAccessed = setLastAccessed === true;
     setLastAccessed = true;
-    citethis.$('txtAuthor').value = citethis.getAuthor (tab);
-    citethis.$('txtYearPublished').value = citethis.getYearPublished ();
-    citethis.$('txtTitle').value = citethis.prepareTitle (tab);
-    //console.log('got title');
-    citethis.$('txtURL').value = tab.url;
-    //console.log('got url');
-    if ( setLastAccessed ) {
-      citethis.$('txtLastAccessed').value = citethis.getLastAccessed ();
-      citethis.$('txtLastUpdated').value = citethis.getLastUpdated ();
-    }
+    citethis._setPageVariablesWithOpts({
+      author: citethis.getAuthor (tab),
+      year: citethis.getYearPublished (),
+      title: citethis.prepareTitle (tab),
+      url: tab.url,
+      accessed: citethis.getLastAccessed(),
+      updated: citethis.getLastUpdated()
+    });
 
-    //console.log('Generating citation...');
-    citethis.generateCitation ();
     console.log('Generated citation...');
-
   },
 
   showContextMenu: function(event) {
@@ -402,39 +407,6 @@ const citethis = {
   },
 
   _isFirstRun: true,
-  getMetaTag: function ( metaTagName ) {
-    metaTagName = metaTagName.toLowerCase();
-    //console.log ( "metaTag: " + metaTagName );
-    try {
-      if ( citethis._isFirstRun ) {
-        citethis._isFirstRun = false;
-
-        var root =  citethis.doc.documentElement;
-        //console.log ( "root: " + root );
-        if (root) {
-          //console.log("root tag : " + root.tagName);
-        }
-      }
-      var head = citethis.doc.getElementsByTagName ("head");
-      //console.log ( "head length: " + head.length );
-      var meta = citethis.doc.getElementsByTagName("meta");
-      //console.log("meta.length = " + meta.length);
-      //console.log("parts.length = " + citethis.doc.getElementsByTagName("script").length);
-      for (var i = 0; i < meta.length; i++) {
-        if (meta[i].name && meta[i].name.toLowerCase() == metaTagName) {
-          return meta[i];
-        }
-      }
-    }
-    catch ( e ) {
-      alert ( e.message );
-    }
-    return null;
-  },
-
-  _reduceWhitespace: function ( str ) {
-    return str.replace (/\s+/, ' ');
-  },
 
   getFirstElementByClass: function (className, prop) {
     prop = prop || 'innerHTML';
@@ -464,122 +436,17 @@ const citethis = {
     }
     return null;
   },
-  /**
-   * Will remove whitespace from either side of the string.
-   * will also remove non-word characters at end of string.
-   */
-  trim: function(str) {
-    return str.replace(/^\s+/, '').replace(/[\s\W]+$/, ''); //trim
-  },
-
-  formatAuthor: function ( author ) {
-    try {
-      if (author) {			
-        author = citethis._reduceWhitespace (author);
-
-
-        author = author.replace(/^\s*by */i, ''); // remove "by"
-
-        // deal with associated press? 
-        author = author.replace(/,\s*Associated Press[.\s\S]+$/ig, '');
-        author = author.replace(/,\s*AP[.\s\S]+$/g, '');
-
-        author = citethis.trim (author);
-        author = citethis.capitalize (author);
-        return author;
-      }
-      return '';
-    }
-    catch (e){
-      alert ( 'formatAuthor exception: ' + e );
-      return '';
-    }
-  },
 
   /**
    * Check to see if there is an element with ID "byline"
    */
-  getAuthorHasBylineElement: function () {
-
-    var el = citethis.getElement('byline'),
-      rtn = null;
-    //console.log ('getAuthorHasBylineElement started ' + el);
-    if (el) {
-      //console.log ('getAuthorHasBylineElement: has el' + el);
-      var val = el.value || el.innerHTML;
-      if (val && val != '') {
-        rtn = val;
-      }
-    }
-    return rtn;
-  },
-
   getElement: function ( id ) {
     return citethis.doc.getElementById ( id );
   },
 
-  getAuthor: function (tab) {
-    var author = "Last, First",
-      metaByl = citethis.getMetaTag ( "byl" ),
-      metaAuthor = citethis.getMetaTag ( "author" ),
-      siteSpec =  citethis.getSiteSpecificByTab(tab, 'getAuthor');
-
-    //console.log("author: " + siteSpec);
-    if ( siteSpec || siteSpec == '' ) return citethis.formatAuthor (siteSpec);
-
-    try {
-      //console.log ( "metaByl: " + metaByl );
-      //console.log ( "metaAuthor: " + metaAuthor );
-      var first = citethis.getAuthorHasBylineElement();
-
-      if ( first ) {
-        author = first;
-      }
-      else if ( metaAuthor && metaAuthor.content != '') {
-        author = metaAuthor.content;
-      }
-      else if ( metaByl && metaByl.content != '' ) {
-        // check for a byline meta element
-        author = metaByl.content;
-      }
-      else {
-        // see if there are any elements marked byline
-        var elByl = citethis.doc.getElementsByClassName ( "byline" );
-
-        //console.log('byline elements:' + elByl.length);
-
-        if ( elByl && elByl.length > 0 ) {
-          // strip and stripTags functions from prototypejs
-          author = elByl[0].
-            textContent.
-            replace(/^\s+/, '').replace(/\s+$/, '');
-
-          author = citethis._reduceWhitespace ( author );
-          ;
-        }
-        else {
-          // check for author elements
-          var elAuthorText = citethis.getFirstElementByClass('author', 'textContent');
-          if(elAuthorText && elAuthorText != '') {
-            author = elAuthorText;
-          }
-          else {
-            var parts = citethis.doc.body ? citethis.doc.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
-            //console.log ( "parts: " + parts );
-            if ( parts && parts[0] ) {
-              author = citethis._reduceWhitespace ( parts[0] );
-            }
-            else {
-              // other fail-safes
-            }
-          }
-        }
-      }
-    }
-    catch(e){
-      alert ( e.message );
-    }
-    return citethis.formatAuthor (author);
+  getAuthor: function() {
+    return null;
+    //return citethis.formatAuthor (author);
   },
 
   getYearPublished: function () {
