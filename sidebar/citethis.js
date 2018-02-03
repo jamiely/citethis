@@ -117,7 +117,7 @@ const citethis = {
 
   prefs: null,
   currentURL: '',
-  citationStyle: '??specify default here',
+  citationStyle: 'apa',
   citationStyleCustom: '',
   dateformat: "MMMM dd, yyyy",
   debug: function ( msg ){
@@ -130,6 +130,7 @@ const citethis = {
 
   addCitationToList: function(newCitation) {
     newCitation = newCitation || citethis.getCitationText ();
+    console.log(`Adding citation to list: ${newCitation}`);
     citethis.$('citationList').value += newCitation + '\n';
   },
 
@@ -159,15 +160,37 @@ const citethis = {
   },
 
   onTabActivated: function() {
-    //console.log('tab was activated');
-    const now = true;
-    citethis.updateCitation(now);
+    citethis.updateCitation({
+      immediateUpdate: true
+    });
   },
 
   onTabUpdated: function() {
     citethis.onTabActivated();
   },
 
+  onCitationStyleChanged: function(event) {
+    citethis.citationStyle = event.target.value;
+    console.log(`citation style changed to ${citethis.citationStyle}`);
+    this.updateCitation({
+      forceUpdate: true
+    });
+  },
+
+  onDateFormatChanged: function(event) {
+    const newValue = event.target.value
+    if(citethis.dateformat === newValue) {
+      return;
+    }
+
+    citethis.dateformat = newValue;
+    //lastAccessed: citethis.$('txtLastAccessed').value,
+    //lastUpdated: citethis.$('txtLastUpdated').value
+    console.log(`date format changed to ${citethis.dateformat}`);
+    this.updateCitation({
+      forceUpdate: true
+    });
+  },
 
   onLoad: function() {
     try {
@@ -185,7 +208,9 @@ const citethis = {
       //console.log ( '1' );
       citethis.showCitationWindow(false);
       //console.log ( '1a' );
-      citethis.setPageVariables(true);
+      citethis.setPageVariables({
+        setLastAccessed: true
+      });
       setInterval(this.checkPage, 1000);
       var e = citethis.$('txtCitationText'), select = function(e){
         citethis.$('txtCitationText').select();
@@ -194,11 +219,23 @@ const citethis = {
       //console.log (2);
       citethis.$('txtCitationText').addEventListener("focus", select, false);
       citethis.$('txtCitationText').addEventListener("click", select, false);
+      document.getElementById('preferences').addEventListener('change', this.onCitationStyleChanged.bind(this));
+      let elDateFormat = document.getElementById('dateFormat');
+      elDateFormat.value = citethis.dateformat;
+      let onDateFormatChanged = this.onDateFormatChanged.bind(this)
+      const events = 'keyup change blur'.split(' ');
+      events.forEach((type) => {
+        elDateFormat.addEventListener(type, onDateFormatChanged);
+      });
 
       var fields = 'txtAuthor txtYearPublished txtTitle txtURL txtLastAccessed txtLastUpdated'.split(' ');
-      for (var i = 0; i < fields.length; i++) {
-        citethis.$(fields[i]).addEventListener('blur', citethis.generateCitation, false);
-      }
+      const update = this.generateCitationDelayed.bind(this);
+      fields.forEach((field) => {
+        events.forEach((event) => {
+          document.getElementById(field)
+            .addEventListener(event, update, false);
+        });
+      });
 
       //console.log(3);
 
@@ -210,12 +247,19 @@ const citethis = {
       //this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
       //this.prefs.addObserver("", this, false);
       //console.log(4);
-      citethis.updateCitationStyle();
+      //citethis.updateCitationStyle();
       //console.log(5);
       citethis.updateCitation();
       //console.log(6);
 
-      citethis.$('btnAddToCitationList').onclick = function () { citethis.addCitationToList(); };
+      document.getElementById('btnAddToCitationList').addEventListener(
+        'click', () => {
+          citethis.addCitationToList();
+        }
+      );
+      document.getElementById('citationList').addEventListener('focus', (event) => {
+        event.target.select();
+      });
 
 
       if ( !console.log) {
@@ -235,14 +279,32 @@ const citethis = {
    * Causes the citation to be updated.
    * @param {Object} immediateUpdate
    */
-  updateCitation: function ( immediateUpdate ) {
+  updateCitation: function ( options ) {
+    if(citethis.updateCitationIsPending) {
+      console.log('update is already pending');
+      return;
+    }
+
+    const opts = Object.assign({
+      immediateUpdate: false,
+      forceUpdate: false
+    }, options);
+    console.log('updateCitation');
     try {
       if (!citethis.citethisWindowIsVisible())
         return;
 
       //console.log('updateCitation: a');
-      immediateUpdate = immediateUpdate === true;
-      var f = citethis.setPageVariables;
+      const immediateUpdate = opts.immediateUpdate === true;
+      var f = () => {
+        citethis.setPageVariables({
+          setLastAccessed: true,
+          forceUpdate: opts.forceUpdate
+        });
+        citethis.updateCitationIsPending = false;
+        console.log('updateCitation complete');
+      };
+      citethis.updateCitationIsPending = true;
       if (immediateUpdate) {
         f();
       }
@@ -255,49 +317,22 @@ const citethis = {
     }
   },
 
-  updateCitationStyle: function () {
-    try {
-      citethis.dateformat = String( citethis.prefs.getCharPref("dateformat") );
-      //console.log("Got Date Format");
+  //updateCitationStyle: function () {
+    //try {
+      //citethis.dateformat = String( citethis.prefs.getCharPref("dateformat") );
+      ////console.log("Got Date Format");
 
-      citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
-      //console.log("Got citation style: " + citethis.citationStyle);
-      citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
-      //console.log("Got Custom Style");
-      citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
+      //citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
+      ////console.log("Got citation style: " + citethis.citationStyle);
+      //citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
+      ////console.log("Got Custom Style");
+      //citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
 
-    }
-    catch (e) {
-      console.log(e.message);
-    }
-  },
-
-  /**
-   * Used to observe changes on preferences.
-   * @param {Object} subject
-   * @param {Object} topic
-   * @param {Object} data
-   */
-  observe: function(subject, topic, data)
-  {
-    if (topic != "nsPref:changed")
-    {
-      return;
-    }
-
-
-    // update citation
-    citethis.updateCitationStyle ();
-    // update the citation
-    citethis.updateCitation ();
-  },
-
-
-  shutdown: function()
-  {
-    this.prefs.removeObserver("", this);
-  },
-
+    //}
+    //catch (e) {
+      //console.log(e.message);
+    //}
+  //},
 
   checkPage: function () {
     try {
@@ -320,25 +355,44 @@ const citethis = {
     citethis.$('txtCitationText').value = citethis.getCitation ();
   },
 
+  generateCitationDelayed: function() {
+    if(citethis.generateCitationDelayedPending) {
+      return;
+    }
+
+    citethis.generateCitationDelayedPending = true;
+    setTimeout(() => {
+      citethis.generateCitation();
+      citethis.generateCitationDelayedPending = false;
+    }, 100);
+  },
+
   getCitationText: function () {
     return citethis.$('txtCitationText').value;
   },
 
   _cachedUrl: '',
 
-  setPageVariables: function( setLastAccessed ) {
+  setPageVariables: function( options ) {
+    const opts = Object.assign({
+      setLastAccessed: false,
+      forceUpdate: false
+    }, options);
+
     citethis.getActiveTab().then((tab) => {
       // prevent regeneration if we're at the same place
-      if(tab.url == lastUrl) return;
+      if(!opts.forceUpdate && tab.url == lastUrl) return;
 
       lastUrl = tab.url;
       executeContentScript(tab);
-      citethis._setPageVariables(tab, tab.url, tab.title, setLastAccessed);
+      citethis._setPageVariables(tab, tab.url, tab.title, opts.setLastAccessed);
     });
   },
 
   _setPageVariablesWithOpts: function(opts) {
-    $ = citethis.$;
+    console.log('set page variables with opts');
+
+    let $ = citethis.$;
     $('txtAuthor').value = opts.author || $('txtAuthor').value;
     $('txtYearPublished').value = opts.year || $('txtYearPublished').value;
     $('txtTitle').value = opts.title || $('txtTitle').value;
@@ -378,7 +432,7 @@ const citethis = {
   },
 
   getCitation: function ( template ) {
-    citethis.citationStyle = 'apa';
+    citethis.citationStyle = citethis.citationStyle;
     console.log('Get citation using style: ' + citethis.citationStyle);
     var selectedTemplate = citethis.citationStyles[citethis.citationStyle];
     template = template || selectedTemplate || citethis.citationStyles.apa;
@@ -462,13 +516,8 @@ const citethis = {
   },
 
   getLastAccessed: function () {
-
-    var m_names = ["January", "February", "March",
-      "April", "May", "June", "July", "August", "September",
-      "October", "November", "December"];
-
-    var d = new Date();
-    return citethis.Date.format(d, citethis.dateformat);
+    console.log('got last accessed');
+    return citethis.Date.format(new Date(), citethis.dateformat);
   },
 
   getHost: function() {

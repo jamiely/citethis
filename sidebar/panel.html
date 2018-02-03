@@ -8,17 +8,36 @@
 
 <body id="citethisRoot">
   <div id="content">
-    <label><textarea id="txtCitationText"></textarea></label>
-    <label>Author   <input type="text" id="txtAuthor"></label>
-    <label>Year     <input type="text" id="txtYearPublished"></label>
-    <label>Title    <input type="text" id="txtTitle"></label>
-    <label>URL      <input type="text" id="txtURL"></label>
-    <label>Accessed <input type="text" id="txtLastAccessed"></label>
-    <label>Updated  <input type="text" id="txtLastUpdated"></label>
-    <button id="btnAddToCitationList">Add &gt;</button>
-    <label>Citation List (Copy to Paste Elsewhere)
-      <textarea id="citationList"></textarea>
-    </label>
+    <div id="citationForm">
+      <h1>Citation</h1>
+      <label><textarea id="txtCitationText"></textarea></label>
+      <h1>Customize</h1>
+      <label>Author   <input type="text" id="txtAuthor"></label>
+      <label>Year     <input type="text" id="txtYearPublished"></label>
+      <label>Title    <input type="text" id="txtTitle"></label>
+      <label>URL      <input type="text" id="txtURL"></label>
+      <label>Accessed <input type="text" id="txtLastAccessed"></label>
+      <label>Updated  <input type="text" id="txtLastUpdated"></label>
+
+      <h1>Add to List</h1>
+      <button id="btnAddToCitationList">Add &gt;</button>
+      <label>Citation List (Copy to Paste Elsewhere)
+        <textarea id="citationList"></textarea>
+      </label>
+    </div>
+    <!-- these are various preferences for citation generation -->
+    <div id="preferences">
+      <h1>Preferences</h1>
+      <label>Citation Style
+        <select>
+          <option>apa</option>
+          <option>ama</option>
+          <option>mla</option>
+          <option>harvard</option>
+        </select>
+      </label>
+      <label>Date Format<input type="text" id="dateFormat"></label>
+    </div>
   </div>
   <script src="citethis.js"></script>
 </body>
