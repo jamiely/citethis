@@ -50,27 +50,6 @@ const citethis = {
     return element;
   },
 
-  timers: [],
-
-  //initTimer: function (fun, ms, type) {
-  //try {
-  //// Now it is time to create the timer...  
-  //var timer 
-  //= Components.classes["@mozilla.org/timer;1"]
-  //.createInstance(Components.interfaces.nsITimer);
-
-  //timer.initWithCallback(
-  //{ notify: fun },
-  //ms,
-  //type);
-
-  //citethis.timers.push(timer);
-  //}
-  //catch(e) {
-  //console.log('Could not initiate timer because ' + e.message);
-  //}
-  //},
-
   citationStyles: {
     /**
      * These are functions which return a citation template. The variables
@@ -144,7 +123,6 @@ const citethis = {
       }
       let tab = ts[0];
       citethis._cachedUrl = tab.url;
-      //console.log(JSON.stringify(tab));
       return tab;
     });
   },
@@ -184,8 +162,6 @@ const citethis = {
     }
 
     citethis.dateformat = newValue;
-    //lastAccessed: citethis.$('txtLastAccessed').value,
-    //lastUpdated: citethis.$('txtLastUpdated').value
     console.log(`date format changed to ${citethis.dateformat}`);
     this.updateCitation({
       forceUpdate: true
@@ -201,13 +177,7 @@ const citethis = {
       // initialization code
 
       this.initialized = true;
-      //document.getElementById("contentAreaContextMenu").addEventListener("popupshowing", function(e){
-      //this.showContextMenu(e);
-      //}, false);
 
-      //console.log ( '1' );
-      citethis.showCitationWindow(false);
-      //console.log ( '1a' );
       citethis.setPageVariables({
         setLastAccessed: true
       });
@@ -216,7 +186,6 @@ const citethis = {
         citethis.$('txtCitationText').select();
       };
 
-      //console.log (2);
       citethis.$('txtCitationText').addEventListener("focus", select, false);
       citethis.$('txtCitationText').addEventListener("click", select, false);
       document.getElementById('preferences').addEventListener('change', this.onCitationStyleChanged.bind(this));
@@ -237,20 +206,7 @@ const citethis = {
         });
       });
 
-      //console.log(3);
-
-      // setup preferences
-
-      //this.prefs = Components.classes["@mozilla.org/preferences-service;1"].
-      //getService(Components.interfaces.nsIPrefService).
-      //getBranch("extensions.citethis@angelforge.org.");
-      //this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
-      //this.prefs.addObserver("", this, false);
-      //console.log(4);
-      //citethis.updateCitationStyle();
-      //console.log(5);
       citethis.updateCitation();
-      //console.log(6);
 
       document.getElementById('btnAddToCitationList').addEventListener(
         'click', () => {
@@ -316,23 +272,6 @@ const citethis = {
       console.log(e.message);
     }
   },
-
-  //updateCitationStyle: function () {
-    //try {
-      //citethis.dateformat = String( citethis.prefs.getCharPref("dateformat") );
-      ////console.log("Got Date Format");
-
-      //citethis.citationStyle = String( citethis.prefs.getCharPref("citationStyle") ).toLowerCase();
-      ////console.log("Got citation style: " + citethis.citationStyle);
-      //citethis.citethis.citationStyleCustom = String( citethis.prefs.getCharPref("citationStyleCustom") ).toLowerCase();
-      ////console.log("Got Custom Style");
-      //citethis.$('lblCitationStyle').value = citethis.citationStyle.toUpperCase();
-
-    //}
-    //catch (e) {
-      //console.log(e.message);
-    //}
-  //},
 
   checkPage: function () {
     try {
@@ -406,7 +345,6 @@ const citethis = {
   _setPageVariables: function ( tab, url, title, setLastAccessed ) {
     citethis.doc = document;
     citethis._isFirstRun = true;
-    //setLastAccessed = setLastAccessed === true;
     setLastAccessed = true;
     citethis._setPageVariablesWithOpts({
       author: citethis.getAuthor (tab),
@@ -418,17 +356,6 @@ const citethis = {
     });
 
     console.log('Generated citation...');
-  },
-
-  showContextMenu: function(event) {
-    // show or hide the menuitem based on what the context menu is on
-    // see http://kb.mozillazine.org/Adding_items_to_menus
-    document.getElementById("context-citethis").hidden = gContextMenu.onImage;
-  },
-  onMenuItemCommand: function(e) {
-    //var promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-    //.getService(Components.interfaces.nsIPromptService);
-    //citethis.openCitationDialog ();
   },
 
   getCitation: function ( template ) {
@@ -456,7 +383,6 @@ const citethis = {
     for ( var key in p ){
       template = template.replace ( "$" + key, p[key] );
     }
-    //console.log('Returning template');
     return template;
   },
 
@@ -538,17 +464,13 @@ const citethis = {
   },
 
   formatTitle: function ( title ) {
-    //console.log('formatting ' + title);
     if (!title) return null;
 
-    //console.log('domain?');
     var h = citethis.getDomain ();
-    //console.log('domain: ' + h);
 
     try{
       // if host appears in title, probably should be removed.
       title = title.replace (new RegExp('\\b' + h + '\\b', 'ig'), '');
-      //console.log('domain: ' + h);
       title = title.replace (/^\W+/, ''); // replace non-word chars at beginning
       title = title.replace(/\W+$/, ''); //replace at end 
     }
@@ -560,10 +482,8 @@ const citethis = {
   prepareTitle: function (tab) {
     let title = tab.title;
 
-    //console.log('prepareTitle: getting');
     var siteSpec =  citethis.getSiteSpecificByTab(tab, 'getTitle');
     if ( siteSpec ) {
-      //console.log('prepareTitle: got site specific title');
       return citethis.formatTitle(siteSpec);
     }
 
@@ -571,37 +491,14 @@ const citethis = {
       return "Website Title";
     }
     // some people have reported the browser is attached to title.
-    //console.log('prepareTitle: formatting title: ' + title);
     let formatted = citethis.formatTitle(title.replace(/ - Mozilla Firefox$/i, ''));
 
     return formatted;
   },
 
-  showCitationWindow: function ( val ) {
-    //citethis.$('citethisRoot').parentNode.style.display = val ? '' : 'none';
-    if ( val ) {
-      citethis.updateCitation();
-    }
-  },
-
   citethisWindowIsVisible: function () {
     return citethis.$('citethisRoot').parentNode.style.display == '';
-  },
-
-  toggleCitationWindow: function () {
-    citethis.showCitationWindow ( ! citethis.citethisWindowIsVisible () );
-  },
-
-  openCitationDialog : function () {
-    try {
-      citethis.toggleCitationWindow ();
-    }
-    catch ( e ) {
-      alert ( e.message );
-    }
-
   }
-
 };
 
 const Wikipedia = {
