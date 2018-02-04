@@ -1,3 +1,4 @@
+import { formatAuthor } from './formatting';
 
 function getMetaTag(name) {
   const metas = document.querySelectorAll(`meta[name=${name}]`);

@@ -2,6 +2,8 @@ import {
   SiteSpecificHandlers,
   getSiteSpecific
 } from './siteSpecific';
+import { formatAuthor } from './formatting';
+import { getAuthorHasBylineElement, getMetaTag } from './extractors';
 
 (function(){
 
@@ -12,10 +14,7 @@ function sendFields() {
     fields: {
       author: getAuthor(),
       url: window.location.href,
-      title: document.title,
-      updated: null,
-      title: null,
-      year: null
+      title: document.title
     }
   };
   let handler = getSiteSpecific(envelope.fields);
@@ -31,38 +30,6 @@ function sendFields() {
   browser.runtime.sendMessage(envelope);
 }
 
-function getAuthorHasBylineElement() {
-  var el = document.querySelectorAll('byline'),
-    rtn = null;
-
-  if (!el) return;
-
-  var val = el.value || el.innerHTML;
-  if (! val) return;
-  if (val == '') return;
-
-  return val;
-}
-
-function getMetaTag( metaTagName ) {
-  metaTagName = metaTagName.toLowerCase();
-
-  try {
-    var meta = document.querySelectorAll("meta");
-    for (var i = 0; i < meta.length; i++) {
-      if (meta[i].name && meta[i].name.toLowerCase() == metaTagName) {
-        return meta[i];
-      }
-    }
-  }
-  catch ( e ) {
-    console.log({
-      what: 'Problem getting meta tag',
-      error: error
-    });
-  }
-  return null;
-}
 
 function getAuthor() {
   const result = formatAuthor(extractAuthor());
@@ -143,49 +110,6 @@ function extractAuthor() {
   return formatAuthor(author);
 }
 
-function formatAuthor( author ) {
-  console.log('formatAuthor');
-
-  if(! author) return '';
-
-  try {
-    author = reduceWhitespace (author);
-
-    author = author.replace(/^\s*by */i, ''); // remove "by"
-
-    // deal with associated press?
-    author = author.replace(/,\s*Associated Press[.\s\S]+$/ig, '');
-    author = author.replace(/,\s*AP[.\s\S]+$/g, '');
-
-    author = trim (author);
-    author = capitalize (author);
-    return author;
-  }
-  catch(e) {
-    alert ( 'formatAuthor exception: ' + e );
-    return '';
-  }
-}
-
-function capitalize(str) {
-  return str.toLowerCase().replace(/\b\w/g,
-    function(capture){
-      return capture.toUpperCase();
-    }
-  );
-}
-
-/**
- * Will remove whitespace from either side of the string.
- * will also remove non-word characters at end of string.
- */
-function trim(str) {
-  return str.replace(/^\s+/, '').replace(/[\s\W]+$/, ''); //trim
-}
-
-function reduceWhitespace( str ) {
-  return str.replace (/\s+/, ' ');
-}
 
 function run() {
   try {

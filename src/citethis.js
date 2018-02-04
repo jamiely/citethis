@@ -35,7 +35,8 @@ function onContentScriptMessage(message, context) {
       what: 'Got fields from execute script',
       fields: message.fields
     });
-    citethis._setPageVariablesWithOpts(message.fields);
+    citethis._setPageVariablesWithOpts(Object.assign(
+      citethis.getDefaultPageVariables(), message.fields));
   }
   console.log(message._context);
 }
@@ -351,6 +352,7 @@ const citethis = {
     }
 
     let $ = citethis.$;
+    console.log(opts);
     $('txtAuthor').value = coal(opts.author, $('txtAuthor').value);
     $('txtYearPublished').value = coal(opts.year, $('txtYearPublished').value);
     $('txtTitle').value = coal(opts.title, $('txtTitle').value);
@@ -362,19 +364,25 @@ const citethis = {
   },
 
   _setPageVariables: function ( tab, url, title, setLastAccessed ) {
+    console.log('_setPageVariables');
     citethis.doc = document;
     citethis._isFirstRun = true;
     setLastAccessed = true;
-    citethis._setPageVariablesWithOpts({
+    citethis._setPageVariablesWithOpts(Object.assign(citethis.getDefaultPageVariables(), {
       author: citethis.getAuthor (tab),
-      year: citethis.getYearPublished (),
       title: citethis.prepareTitle (tab),
-      url: tab.url,
-      accessed: citethis.getLastAccessed(),
-      updated: citethis.getLastUpdated()
-    });
+      url: tab.url
+    }));
 
     console.log('Generated citation...');
+  },
+
+  getDefaultPageVariables() {
+    return {
+      year: citethis.getYearPublished (),
+      accessed: citethis.getLastAccessed(),
+      updated: citethis.getLastUpdated()
+    }
   },
 
   getCitation: function ( template ) {
