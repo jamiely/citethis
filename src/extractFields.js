@@ -1,23 +1,34 @@
+import {
+  SiteSpecificHandlers,
+  getSiteSpecific
+} from './siteSpecific';
+
 (function(){
 
-function log(message) {
-  browser.runtime.sendMessage({
-    _context: 'log',
-    message: message
-  });
-}
-
 function sendFields() {
-  log('sendFields');
-  browser.runtime.sendMessage({
+  console.log('sendFields');
+  let envelope = {
     _context: 'fields',
     fields: {
       author: getAuthor(),
+      url: window.location.href,
+      title: document.title,
       updated: null,
       title: null,
       year: null
     }
-  });
+  };
+  let handler = getSiteSpecific(envelope.fields);
+  if(handler && handler.get) {
+    console.log('Calling site specific handler');
+    let handlerFields = handler.get(envelope.fields);
+    if(handlerFields.author) {
+      handlerFields.author = formatAuthor(handlerFields.author);
+    }
+    envelope.fields = handlerFields;
+  }
+  console.log(`got handler ${handler}`);
+  browser.runtime.sendMessage(envelope);
 }
 
 function getAuthorHasBylineElement() {
@@ -45,7 +56,7 @@ function getMetaTag( metaTagName ) {
     }
   }
   catch ( e ) {
-    log({
+    console.log({
       what: 'Problem getting meta tag',
       error: error
     });
@@ -54,7 +65,11 @@ function getMetaTag( metaTagName ) {
 }
 
 function getAuthor() {
-  return formatAuthor(extractAuthor());
+  const result = formatAuthor(extractAuthor());
+  if(!result) {
+    return '';
+  }
+  return result;
 }
 
 function extractAuthor() {
@@ -63,28 +78,25 @@ function extractAuthor() {
     metaAuthor = getMetaTag ( "author" ),
     siteSpec = null;
 
-  if ( siteSpec || siteSpec == '' ) {
-    return siteSpec;
-  }
-
   try {
-    log('extractAuthor 1');
+    console.log('extractAuthor 1');
     var first = getAuthorHasBylineElement();
     if(first) return first;
 
-    log('extractAuthor 2');
-    if ( metaAuthor && metaAuthor.content != '') {
-      log(metaAuthor.content);
-      return metaAuthor.content;
+    console.log('extractAuthor 2');
+    if ( metaAuthor ) {
+      const content = metaAuthor.getAttribute('content');
+      console.log(`content: ${content}`);
+      return content;
     }
 
-    log('extractAuthor 3');
+    console.log('extractAuthor 3');
     if ( metaByl && metaByl.content != '' ) {
       // check for a byline meta element
       return metaByl.content;
     }
 
-    log('extractAuthor 4');
+    console.log('extractAuthor 4');
     // see if there are any elements marked byline
     let elByl = document.querySelectorAll( "byline" );
     if ( elByl && elByl.length > 0 ) {
@@ -96,27 +108,32 @@ function extractAuthor() {
       return author;
     }
 
-    log('extractAuthor 5');
+    console.log('extractAuthor 5');
     // see if there are any elements with a byline class
     let elsBylineClass = document.querySelectorAll('.byline-author');
     if(elsBylineClass && elsBylineClass.length > 0) {
-      log('.byline-author');
+      console.log('.byline-author');
       let el = elsBylineClass[0];
       return el.dataset['byline-name'];
     }
 
-    log('extractAuthor 6');
+    console.log('extractAuthor 6');
     // check for author elements
     let els = document.querySelectorAll('author');
     if(els && els.lenth > 0) {
       return els[0].textContent;
     }
 
-    log('extractAuthor 7');
+    console.log('extractAuthor 7');
     var parts = document.body ? document.body.textContent.match ( /by (([A-Z\.'-] ?){2,3})/ ) : null;
     //console.log ( "parts: " + parts );
     if ( parts && parts[0] ) {
       return reduceWhitespace ( parts[0] );
+    }
+
+    let extract8 = document.querySelectorAll('.author-byline');
+    if(extract8 && extract8.length > 0) {
+      return extract8[0].innerText;
     }
   }
   catch(e){
@@ -127,6 +144,8 @@ function extractAuthor() {
 }
 
 function formatAuthor( author ) {
+  console.log('formatAuthor');
+
   if(! author) return '';
 
   try {
@@ -170,7 +189,7 @@ function reduceWhitespace( str ) {
 
 function run() {
   try {
-    log({
+    console.log({
       what: 'loaded'
     });
     sendFields();
@@ -184,6 +203,7 @@ function run() {
   }
 }
 
+document.addEventListener("DOMContentLoaded", run);
 run();
 
 })();

@@ -1,3 +1,8 @@
+import {
+  SiteSpecificHandlers,
+  getSiteSpecific
+} from './siteSpecific';
+
 (function(root) {
 
 var lastUrl = null;
@@ -26,6 +31,10 @@ function onContentScriptMessage(message, context) {
   }
 
   if(message._context == 'fields') {
+    console.log({
+      what: 'Got fields from execute script',
+      fields: message.fields
+    });
     citethis._setPageVariablesWithOpts(message.fields);
   }
   console.log(message._context);
@@ -331,13 +340,23 @@ const citethis = {
   _setPageVariablesWithOpts: function(opts) {
     console.log('set page variables with opts');
 
+    function coal(first, ...args) {
+      function rest() {
+        return coal.apply(null, args);
+      }
+      if(first === undefined) return rest();
+      if(first === null) return rest();
+
+      return first;
+    }
+
     let $ = citethis.$;
-    $('txtAuthor').value = opts.author || $('txtAuthor').value;
-    $('txtYearPublished').value = opts.year || $('txtYearPublished').value;
-    $('txtTitle').value = opts.title || $('txtTitle').value;
-    $('txtURL').value = opts.url || $('txtURL').value;
-    $('txtLastAccessed').value = opts.accessed || $('txtLastAccessed').value;
-    $('txtLastUpdated').value = opts.updated || $('txtLastUpdated').value;
+    $('txtAuthor').value = coal(opts.author, $('txtAuthor').value);
+    $('txtYearPublished').value = coal(opts.year, $('txtYearPublished').value);
+    $('txtTitle').value = coal(opts.title, $('txtTitle').value);
+    $('txtURL').value = coal(opts.url, $('txtURL').value);
+    $('txtLastAccessed').value = coal(opts.accessed, $('txtLastAccessed').value);
+    $('txtLastUpdated').value = coal(opts.updated, $('txtLastUpdated').value);
 
     citethis.generateCitation ();
   },
@@ -398,21 +417,15 @@ const citethis = {
   },
 
   getSiteSpecificByTab: function(tab, funcName) {
-    let handlers = SiteSpecificHandlers
-    // run site specific functions
-    for(let i = 0; i < handlers.length; i++){
-      var handler = handlers[i]; // set of functions
-      if ( handler && handler.is && handler.is (tab) ) { // if func is exists
-        let func = handler[funcName];
-        if (func) { // if func exists
-          console.log({
-            what: 'Calling site specific func',
-            funcName: funcName,
-            tab: tab
-          });
-          return func.call(this, tab);
-        }
-      }
+    let handler = getSiteSpecific(tab);
+    let func = handler[funcName];
+    if (func) { // if func exists
+      console.log({
+        what: 'Calling site specific func',
+        funcName: funcName,
+        tab: tab
+      });
+      return func.call(this, tab);
     }
     return null;
   },
@@ -500,97 +513,6 @@ const citethis = {
     return citethis.$('citethisRoot').parentNode.style.display == '';
   }
 };
-
-const Wikipedia = {
-  is: function(tab) {
-    return /wikipedia\.org\//i.test(tab.url);
-  },
-  getAuthor: () => {
-    return '';
-  },
-  getTitle: (tab) => {
-    tab.title.replace(/ - Wikipedia.+/, '');
-  }
-};
-
-const CNN = {
-  is: function(tab) {
-    return /cnn\.com\//i.test(tab.url);
-  },
-  getAuthor: function(tab) {
-    var els = document.getElementsByClassName('cnn_strycbftrtxt');
-    if (els && els.length > 0 ) {
-      var e = els[0],
-        matches = /^cnn's(.+) contributed.+/ig.exec(e.innerHTML);
-      if (matches && matches.length > 1 ) {
-        return matches[1];
-      }
-    }
-    // try getting metadata__byline__author
-    els = citethis.doc.getElementsByClassName('metadata__byline__author');
-    console.log('CNN metadata');
-    if(els && els.length > 0) {
-      var content = els[0].innerHtml;
-      return content;
-    }
-    // try getting meta author
-    var metaAuthor = citethis.getMetaTag ( "author" );
-    if ( metaAuthor ) {
-      var c = metaAuthor.content,
-        parts = c.split(',');
-      parts = parts.slice(0, parts.length-1);
-      return parts.join (',');
-    }
-    return null;
-  },
-  getTitle: function(tab) {
-    return tab.title.replace(/ - CNN.+/, '');
-  }
-};
-
-const Huffington = {
-  is: function (tab) {
-    return /huffingtonpost\.com/i.test ( tab.url );
-  },
-  getAuthor: function (tab) {
-    return citethis.getFirstElementByClass ('wire_author');
-  }
-};
-
-const ABCNews = {
-  is: function (tab) {
-    return /abcnews\.go\.com/i.test (tab.url);
-  },
-  getAuthor: function (tab) {
-    var a = citethis.getFirstElementByClass ('story_byline', 'textContent');
-
-    return a ? a.replace(/ABC.+/i, ''): null;
-  }
-};
-
-const FoxNews = {
-  is: function (tab) { return /fox\w+\.com/i.test(tab.url); },
-  getTitle: function (tab) {
-    return tab.title.
-      replace(/.*FOXNews.com\s+-\s+/i, '').
-      replace(/ - FOX.+/i, '');
-  }
-};
-
-const NYT = {
-  is: (tab) => { return /nytimes.com/i.test(tab.url); },
-  getAuthor: (tab) => {
-    let el = document.querySelector('.byline-author');
-    console.log({
-      what: 'Getting NYT author',
-      el: el,
-      body: document.body
-    });
-    return null;
-  }
-};
-
-const SiteSpecificHandlers = [Wikipedia, CNN, Huffington, ABCNews, FoxNews, NYT];
 
 // the following functions taken from datejs library, with MIT license.
 citethis.Date = {}; 
