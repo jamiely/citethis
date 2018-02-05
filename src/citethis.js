@@ -713,6 +713,5 @@ citethis.Date.format = function (dt, format) {
 };
 
 root.addEventListener("load", function(e) { citethis.onLoad(e); }, false);
-root.addEventListener("unload", function(e) { citethis.shutdown(e); }, false);
 
 })(window);
