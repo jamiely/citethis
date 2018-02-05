@@ -103,10 +103,13 @@ class Huffington {
   }
 
   getAuthor(tab) {
+    console.log('huffington author');
     const fns = 'author-card__link bn-author-name yr-author-name'.split(' ')
       .map((className) => {
         return () => {
-          return getFirstBySelector(`.${className}`).innerText;
+          let result = getFirstBySelector(`.${className}`).textContent.trim();
+          if(result === '') return null;
+          return result;
         };
       });
     return coalesceFns(...fns, () => '');
@@ -127,7 +130,7 @@ class ABCNews {
 
   getAuthor(tab) {
     var el = getFirstBySelector('[rel=author]');
-    if(el) return el.innerText;
+    if(el) return el.textContent;
     return null;
   }
 };
@@ -148,7 +151,7 @@ class FoxNews{
   getAuthor(data) {
     let extract8 = document.querySelectorAll('.author-byline');
     if(extract8 && extract8.length > 0) {
-      return extract8[0].innerText.replace(/ \| .*/, '');
+      return extract8[0].textContent.replace(/ \| .*/, '');
     }
   }
 
