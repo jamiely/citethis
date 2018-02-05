@@ -9,7 +9,7 @@ var lastUrl = null;
 
 function executeContentScript(tab) {
   browser.tabs.executeScript({
-    file: 'extractFields.js'
+    file: '/sidebar/extractFields.js'
   })
     .then(() => {
       console.log('executed content script');

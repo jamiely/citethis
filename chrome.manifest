@@ -1,5 +1,0 @@
-content	citethis	content/
-locale	citethis	en-US	locale/en-US/
-skin	citethis	classic/1.0	skin/
-overlay	chrome://browser/content/browser.xul	chrome://citethis/content/firefoxOverlay.xul
-style	chrome://global/content/customizeToolbar.xul	chrome://citethis/skin/overlay.css
