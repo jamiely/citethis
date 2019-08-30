@@ -102,6 +102,15 @@ const citethis = {
         return '$author. "$title". $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>';
       }
     }
+    bibtex:  function (data) {
+      var bibTitle = title.split(' ')[0];
+      if (data.author) {
+        return '@misc{$bibTitle, title={$title}, author={$author}, howpublished={\\url{$url}}, note={Accessed:$lastAccessed}}'
+      }
+      else {
+        return '@misc{$bibTitle, title={$title}, howpublished={\\url{$url}}, note={Accessed:$lastAccessed}}'
+      }
+    }
   },
 
   prefs: null,
