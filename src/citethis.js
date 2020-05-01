@@ -101,7 +101,16 @@ const citethis = {
       else {
         return '$author. "$title". $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>';
       }
-    }
+    },
+    bibtex: function (data) {
+      data.bibID = citethis.generateBibTexID(data);
+      if (data.author) {
+        return `@article\{${data.bibID},\n\tauthor\t={$author},\n\ttitle\t={$title},\n\tyear\t={$year},\n\turl\t={$url}\n\t\}`;
+      }
+      else {
+        throw new Error("Source lacks all required BibTex data: author, year");
+      }
+    },
   },
 
   prefs: null,
@@ -436,6 +445,16 @@ const citethis = {
       return func.call(this, tab);
     }
     return null;
+  },
+
+  generateBibTexID(data) {
+    if (data.author && data.year) {
+      return `${data.author.replace(/\s/g, "_") + '_' + data.year + '_' + citethis.getDomain()}`;
+    } else if (data.author) {
+      return `${data.author.replace(/\s/g, "_") + (data.year ? '_' + data.year : '') + '_' + citethis.getDomain()}`;
+    } else {
+      throw new Error("Source lacks all required BibTex data: author, year, journal");
+    }
   },
 
   /**
