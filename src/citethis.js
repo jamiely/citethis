@@ -435,6 +435,9 @@ const citethis = {
 
   getSiteSpecificByTab: function(tab, funcName) {
     let handler = getSiteSpecific(tab);
+    if (!handler) {
+      return null;
+    }
     let func = handler[funcName];
     if (func) { // if func exists
       console.log({
