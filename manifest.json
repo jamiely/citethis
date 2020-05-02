@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Cite This!",
   "description": "Cite this allows you to easily retrieve citations for the websites you visit.",
-  "version": "0.24",
+  "version": "0.25",
   "applications": {
     "gecko": {
       "strict_min_version": "54.0a1"

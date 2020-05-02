@@ -1,11 +1,10 @@
 {
   "devDependencies": {
     "concurrently": "^5.2.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-zip": "^4.1.0",
     "jshint": "^2.11.0",
     "mocha": "^5.0.0",
-    "mocha-webpack": "^1.0.1",
     "mock-browser": "^0.92.14",
     "web-ext": "^4.2.0",
     "webpack": "^4.3.0",
@@ -18,7 +17,9 @@
     "watch-develop": "concurrently -k -p \"[{name}]\" -n \"Webpack,FireFox web-ext\" -c \"cyan.bold,green.bold\" \"yarn run build-watch\" \"npm run web-ext\"",
     "web-ext": "web-ext run --firefox-profile=extension-developer",
     "develop": "yarn run web-ext",
-    "test": "mocha-webpack --webpack-config webpack.config.test.js \"src/*test.js\"",
+    "dist": "gulp archive",
+    "build:test": "webpack --config webpack.config.test.js",
+    "test": "yarn run build:test && mocha dist/tests.js",
     "debug": "jshint --config .jshintrc src/"
   },
   "dependencies": {}

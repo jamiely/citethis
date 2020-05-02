@@ -1,7 +1,11 @@
+const path = require("path");
 var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
+  entry: './src/test.js',
   output: {
+    path: path.resolve(__dirname, "dist"),
+    filename: "tests.js",
     // use absolute paths in sourcemaps (important for debugging via IDE)
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
     devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
