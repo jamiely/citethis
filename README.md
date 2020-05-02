@@ -1,3 +1,5 @@
+<img src="https://github.com/jamiely/citethis/workflows/Node.js%20CI/badge.svg" />
+
 # Installation
 
 * [Install the addon](https://addons.mozilla.org/en-US/firefox/addon/cite-this)
