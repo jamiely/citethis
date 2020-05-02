@@ -13,13 +13,15 @@
   },
   "scripts": {
     "build": "webpack",
-    "build-watch": "webpack --watch",
-    "watch-develop": "concurrently -k -p \"[{name}]\" -n \"Webpack,FireFox web-ext\" -c \"cyan.bold,green.bold\" \"yarn run build-watch\" \"npm run web-ext\"",
+    "build:watch": "webpack --watch",
+    "develop:watch": "concurrently -k -p \"[{name}]\" -n \"Webpack,FireFox web-ext\" -c \"cyan.bold,green.bold\" \"yarn run build:watch\" \"npm run web-ext\"",
     "web-ext": "web-ext run --firefox-profile=extension-developer",
     "develop": "yarn run web-ext",
     "dist": "gulp archive",
     "build:test": "webpack --config webpack.config.test.js",
+    "build:test:watch": "webpack --config webpack.config.test.js --watch",
     "test": "yarn run build:test && mocha dist/tests.js",
+    "test:watch": "concurrently -k -p \"[{name}]\" -n \"Webpack,Mocha\" -c \"cyan.bold,green.bold\" \"yarn run build:test:watch\" \"mocha --watch dist/tests.js\"",
     "debug": "jshint --config .jshintrc src/"
   },
   "dependencies": {}

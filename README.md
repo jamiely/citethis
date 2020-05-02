@@ -22,8 +22,29 @@ Firefox browser using the profile we created above, which will also watch
 changes, using:
 
 ```
-yarn run watch-develop
+yarn run develop:watch
 ```
+
+It is useful to run tests while you are doing development (TDD-style).
+To do this, use:
+
+```
+yarn run test:watch
+```
+
+# Testing
+
+You can run tests a single time using:
+
+```
+yarn run test
+```
+
+or watch file changes using:
+```
+yarn run test:watch
+```
+
 
 # Support
 

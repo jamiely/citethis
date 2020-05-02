@@ -1,8 +1,9 @@
 const path = require("path");
+var glob = require("glob");
 var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  entry: './src/test.js',
+  entry: glob.sync("./src/**/*.test.js"),
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "tests.js",
