@@ -7,6 +7,10 @@
     The Show Sidebars button looks like a square with a vertical dividing
     line, with text on the left side.
 
+# Source
+
+[https://github.com/jamiely/citethis](https://github.com/jamiely/citethis)
+
 # Developing
 
 This project uses [Yarn](https://yarnpkg.com/).
