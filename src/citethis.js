@@ -456,7 +456,7 @@ const citethis = {
     } else if (data.author) {
       return `${data.author.replace(/\s/g, "_") + (data.year ? '_' + data.year : '') + '_' + citethis.getDomain()}`;
     } else {
-      throw new Error("Source lacks all required BibTex data: author, year, journal");
+      throw new Error("Source lacks all required BibTex data: author, year");
     }
   },
 
