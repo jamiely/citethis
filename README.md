@@ -2,6 +2,10 @@
 
 * [Install the addon](https://addons.mozilla.org/en-US/firefox/addon/cite-this)
 * Open the CiteThis! Sidebar from View > Sidebar > CiteThis!
+  * On Windows, you might have to press the ALT key to see the View menu.
+  * On Windows, you may need to click the Show Sidebars icon at the top right.
+    The Show Sidebars button looks like a square with a vertical dividing
+    line, with text on the left side.
 
 # Developing
 
