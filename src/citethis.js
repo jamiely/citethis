@@ -111,6 +111,14 @@ const citethis = {
         throw new Error("Source lacks all required BibTex data: author, year");
       }
     },
+    wikipedia: function (data) {
+      if(data.author)
+      {
+        var fullName = data.author.split(" ");
+        var today = new Date().toISOString().slice(0,10);
+        return '<ref>{{cite web |url=$url |title=$title |last='+fullName[1]+' |first='+fullName[0]+' |publisher=$publisher |access-date='+today+'}}</ref>';
+      }
+    },
   },
 
   prefs: null,
