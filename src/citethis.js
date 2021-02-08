@@ -112,12 +112,19 @@ const citethis = {
       }
     },
     wikipedia: function (data) {
+      var base = '<ref>{{cite web |url=$url |title=$title ';
+      var today = new Date().toISOString().slice(0,10);
       if(data.author)
       {
         var fullName = data.author.split(" ");
-        var today = new Date().toISOString().slice(0,10);
-        return '<ref>{{cite web |url=$url |title=$title |last='+fullName[1]+' |first='+fullName[0]+' |publisher=$publisher |access-date='+today+'}}</ref>';
+        base += '|last='+fullName[1]+' |first='+fullName[0]+' ';
       }
+      if(data.lastUpdated)
+      {
+        base += '|orig-date=$lastUpdated ';
+      }
+      base += '|access-date='+today+' ';
+      return base + '}}</ref>';
     },
   },
 
