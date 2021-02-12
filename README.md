@@ -68,5 +68,5 @@ https://github.com/jamiely/citethis
 
 # Date Formatters
 
-Uses DateJS format specified http://code.google.com/p/datejs/wiki/FormatSpecifiers
+Uses DateJS format specified https://github.com/datejs/Datejs/wiki/Format-Specifiers
 
