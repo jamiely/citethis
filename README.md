@@ -32,6 +32,10 @@ Firefox browser using the profile we created above, which will also watch
 changes, using:
 
 ```
+# Do this on your first usage and when dependencies change.
+yarn install
+
+# Do this whenever you develop
 yarn run develop:watch
 ```
 
@@ -70,3 +74,9 @@ https://github.com/jamiely/citethis
 
 Uses DateJS format specified https://github.com/datejs/Datejs/wiki/Format-Specifiers
 
+
+# Packaging
+
+```bash
+yarn dist
+```
