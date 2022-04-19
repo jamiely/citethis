@@ -25,6 +25,7 @@ function formatAuthor( author ) {
 
   author = trim (author);
   author = capitalize (author);
+  author = strip(author)
   return author;
 }
 
@@ -34,6 +35,13 @@ function capitalize(str) {
       return capture.toUpperCase();
     }
   );
+}
+
+function strip(html){
+  if(typeof DOMParser === undefined) return html
+
+  let doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || "";
 }
 
 export {
