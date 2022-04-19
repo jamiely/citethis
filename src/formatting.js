@@ -38,7 +38,7 @@ function capitalize(str) {
 }
 
 function strip(html){
-  if(typeof DOMParser === undefined) return html
+  if(typeof DOMParser === 'undefined') return html
 
   let doc = new DOMParser().parseFromString(html, 'text/html');
   return doc.body.textContent || "";
