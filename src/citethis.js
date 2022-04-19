@@ -96,10 +96,10 @@ const citethis = {
     },
     mla: function (data) {
       if (data.author) {
-        return '"$title." $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>'
+        return '"$title." $site. $lastUpdated. $lastAccessed. <$url>'
       }
       else {
-        return '$author. "$title". $site. $lastUpdated. $publisher, Web. $lastAccessed. <$url>';
+        return '$author. "$title". $site. $lastUpdated. $lastAccessed. <$url>';
       }
     },
     bibtex: function (data) {
@@ -426,7 +426,8 @@ const citethis = {
       title: citethis.$('txtTitle').value,
       url: citethis.$('txtURL').value,
       lastAccessed: citethis.$('txtLastAccessed').value,
-      lastUpdated: citethis.$('txtLastUpdated').value
+      lastUpdated: citethis.$('txtLastUpdated').value,
+      site: citethis.getDomain(),
     };
 
     // retrieve template using passed data.
